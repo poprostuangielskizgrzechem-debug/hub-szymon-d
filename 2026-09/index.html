@@ -2013,6 +2013,18 @@ video {
       .hub-speaker:hover { border-color:var(--hub-blue); background:var(--hub-tint); }
       .hub-speaker svg { width:20px; height:20px; }
 
+      /* --- Teksty: pasek odtwarzacza (Play/Pause, Stop, tempo, przewijanie) --- */
+      .hub-player { display:flex; align-items:center; gap:8px; margin:6px 0 12px; flex-wrap:wrap; }
+      .hub-player-btn { flex-shrink:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--hub-line);
+                     background:#fff; color:var(--hub-blue); cursor:pointer; display:flex;
+                     align-items:center; justify-content:center; transition:all .15s ease; padding:0; }
+      .hub-player-btn:hover { border-color:var(--hub-blue); background:var(--hub-tint); }
+      .hub-player-btn svg { width:18px; height:18px; }
+      .hub-player-rate { width:auto; border-radius:18px; padding:0 12px; font-family:'Plus Jakarta Sans', Arial, sans-serif;
+                          font-size:12px; font-weight:800; }
+      .hub-player-rate.is-active { background:var(--hub-blue); border-color:var(--hub-blue); color:#fff; }
+      .hub-player-seek { flex:1 1 120px; min-width:100px; accent-color:var(--hub-blue); cursor:pointer; }
+
       /* --- zdania --- */
       .hub-sent { border:1px solid var(--hub-line); border-radius:12px; padding:14px 16px; margin-bottom:12px; }
       .hub-sent-word { font-family:'Plus Jakarta Sans', Arial, sans-serif; font-size:16px; font-weight:800;
@@ -2151,6 +2163,7 @@ video {
             <button type="button" class="hub-nav-btn" data-hub-nav="media">&#127909; Artyku&#322;y/Wideo</button>
             <button type="button" class="hub-nav-btn" data-hub-nav="verbs">&#128260; Czasowniki</button>
             <button type="button" class="hub-nav-btn" data-hub-nav="pronunciation">&#128266; Wymowa</button>
+            <button type="button" class="hub-nav-btn" data-hub-nav="writing">&#128214; Teksty</button>
             <button type="button" class="hub-nav-btn" data-hub-nav="sentences">&#9997;&#65039; Zdania</button>
         </nav>
         <!-- === HUB MODULE - END (nav) === -->
@@ -2199,6 +2212,11 @@ video {
                             <span class="tg-choice-icon">💻</span>
                             <span class="tg-choice-label">Test Interaktywny</span>
                         </button>
+                        <!-- Widoczny tylko gdy window.TGP_HOST === 'teacher-app' (aplikacja nauczyciela, Etap Z2) -->
+                        <button id="tg-assign-btn" onclick="handleFreezeAssignment()" class="tg-choice hidden">
+                            <span class="tg-choice-icon">📋</span>
+                            <span class="tg-choice-label">Zadaj jako zadanie</span>
+                        </button>
                     </div>
                     <div class="text-center mt-6">
                         <button onclick="abortToDashboard()" class="tg-link">← Abort to Dashboard</button>
@@ -2234,7 +2252,11 @@ video {
                     <span id="student-header-name" class="font-display font-bold text-indigo-900 text-base hidden md:inline-block">Student</span>
                     <span id="student-xp" class="ml-2 font-display font-bold text-indigo-700 bg-white px-4 py-1.5 rounded-full border border-indigo-200 tracking-widest uppercase transition-all text-xs">0 XP</span>
                 </div>
-                <button onclick="abortToDashboard()" class="tg-link">Abort</button>
+                <div class="flex items-center gap-3">
+                    <!-- Widoczny tylko w trybie zadania (window.TGP_ASSIGNMENT) z ustawionym secondsPerQuestion -->
+                    <span id="assignment-timer" class="hidden font-display font-bold text-red-600 bg-white px-4 py-1.5 rounded-full border border-red-200 tracking-widest uppercase text-xs"></span>
+                    <button id="tg-abort-btn" onclick="abortToDashboard()" class="tg-link">Abort</button>
+                </div>
             </div>
             <div class="w-full bg-indigo-100 h-1.5"><div id="progress-bar-fill" class="tg-progress-fill h-1.5 transition-all duration-300" style="width: 0%"></div></div>
             <div class="w-full flex justify-end px-6 md:px-8 pt-1.5"><span id="progress-fraction" class="text-[11px] font-display font-bold text-indigo-400 tracking-widest"></span></div>
@@ -2446,6 +2468,27 @@ video {
             </div>
         </section>
         <!-- === HUB MODULE - END (pronunciation view) === -->
+        <!-- === HUB MODULE - START (writing/speaking view) === -->
+        <section id="hub-writing-view" class="hidden no-print flex-grow flex items-start justify-center relative z-20">
+            <div class="hub-shell">
+                <div class="hub-topbar"></div>
+                <div class="hub-inner">
+
+                    <div class="hub-head">
+                        <h2 class="hub-title">Teksty</h2>
+                        <p class="hub-tagline">Teksty do przeczytania na g&#322;os albo do napisania samodzielnie.</p>
+                    </div>
+
+                    <div id="hub-writing-list"></div>
+
+                    <div class="hub-footer">
+                        <button type="button" class="hub-link-btn" data-hub-nav="home">&larr; Powr&oacute;t</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <!-- === HUB MODULE - END (writing/speaking view) === -->
         <!-- === HUB MODULE - START (sentences view) === -->
         <section id="hub-sentences-view" class="hidden no-print flex-grow flex items-start justify-center relative z-20">
             <div class="hub-shell">
@@ -2809,14 +2852,21 @@ video {
         "teacherWhatsApp": "48665824363",
         "storageKey": "hub_szymon-d_2026-09",
         "studentKey": "hub_szymon-d",
-        "stamp": "aktualizacja po lekcji 1, 14.09.2026",
-        "lastLessonPhrase": "lekcji 1",
+        "stamp": "aktualizacja po lekcji 2, 21.09.2026",
+        "lastLessonPhrase": "lekcji 2",
         "lessons": [
                 {
                         "label": "Lekcja 1",
                         "dateLabel": "14.09.2026",
                         "categoryKey": "Lekcja 1 (14.09)",
                         "vocabCount": 28,
+                        "topic": ""
+                },
+                {
+                        "label": "Lekcja 2",
+                        "dateLabel": "21.09.2026",
+                        "categoryKey": "",
+                        "vocabCount": 0,
                         "topic": ""
                 }
         ],
@@ -2870,6 +2920,22 @@ video {
                         "items": [],
                         "explanation": "'Learn' oznacza przyswoić/nauczyć się czegoś (efekt), a 'study' to samo przygotowywanie się do egzaminu - w kontekście przygotowań do testu używamy 'study'.",
                         "links": []
+                },
+                {
+                        "lessonLabel": "Lekcja 2",
+                        "dateLabel": "21.09.2026",
+                        "topic": "Mowa bierna (Passive Voice) - Repetytorium Maturzysty Macmillan, Grammar Reference Unit 7, s. 271, zad. 1-2",
+                        "mistake": "",
+                        "correction": "",
+                        "items": [],
+                        "explanation": "Ćwiczenia na tworzenie strony biernej w czasach Simple (Present/Past/Future Simple).",
+                        "links": [
+                                {
+                                        "label": "Strona bierna w czasach simple – ćwiczenia",
+                                        "url": "https://www.ang.pl/cwiczenia/1883/strona-bierna-czasy-simple",
+                                        "type": "test"
+                                }
+                        ]
                 }
         ],
         "homework": [],
@@ -2890,6 +2956,7 @@ video {
                         "note": ""
                 }
         ],
+        "writingSpeaking": [],
         "distractors": [
                 {
                         "word": "argue",
@@ -3180,6 +3247,11 @@ video {
                         "lessonLabel": "Lekcja 1",
                         "dateLabel": "14.09.2026",
                         "text": "To pierwsza lekcja zapisana w tym Hubie - od teraz każda kolejna będzie się tu pojawiać.\n\nWarto zacząć od rozejrzenia się po narzędziu. Najlepiej działa na komputerze, a odsłuchiwanie wymowy brzmi najlepiej w przeglądarce Google Chrome. To wersja beta, więc wszelkie uwagi są mile widziane.\n\nPo każdej lekcji pojawia się nowy plik z dopisanym materiałem. Zawsze otwieramy ten najnowszy - poprzednie lekcje już się w nim znajdują. Datę aktualizacji widać na dole tego ekranu.\n\nNarzędzie trafia najpierw do osób, które uczą się także między lekcjami i powtarzają zadany materiał. Właśnie tam najszybciej widać, co działa, a co trzeba poprawić.\n\nWarto przejrzeć testy i fiszki z tej lekcji oraz napisać kilka zdań z wylosowanymi słówkami. Warto też regularnie ćwiczyć czasowniki nieregularne."
+                },
+                {
+                        "lessonLabel": "Lekcja 2",
+                        "dateLabel": "21.09.2026",
+                        "text": "Rób sobie testy i pracuj systematycznie z fiszkami z Unit 1."
                 }
         ]
 };
@@ -3246,6 +3318,188 @@ video {
             document.getElementById('student-name-input').addEventListener('input', (e) => {
                 document.getElementById('start-test-btn').disabled = e.target.value.trim().length === 0;
             });
+
+            // Tryb zadania (Etap Z2, PWA): globale wstrzykiwane wyłącznie przez
+            // engine-adapter.js, w standalone TGP_*.html z build_tgp.mjs nie
+            // istnieją i te dwa if-y nigdy się nie wykonują.
+            if (window.TGP_HOST === 'teacher-app') {
+                const assignBtn = document.getElementById('tg-assign-btn');
+                if (assignBtn) assignBtn.classList.remove('hidden');
+            }
+            if (isAssignmentMode()) {
+                initAssignmentMode();
+            }
+        }
+
+        // ==========================================
+        // TRYB ZADANIA (Etap Z2) - nauczyciel zamraża test, uczeń go rozwiązuje
+        // ==========================================
+        function isAssignmentMode() {
+            return !!(window.TGP_ASSIGNMENT && Array.isArray(window.TGP_ASSIGNMENT.questions));
+        }
+
+        // Pola stanu z jednego rozwiązania - usuwane przy zamrażaniu, bo mają
+        // się wyzerować na starcie u każdego ucznia (patrz resetTaskRuntimeState).
+        function stripQuestionForFreeze(task) {
+            const clone = { ...task };
+            delete clone.isCompleted; delete clone.earnedXP; delete clone.userSelectedIdx;
+            delete clone.userText; delete clone.usedHint; delete clone.usedAnswer;
+            delete clone.attempts; delete clone.completedConnections; delete clone.matchStateMemory;
+            delete clone.timedOut;
+            return clone;
+        }
+
+        function buildAnswerKeyEntry(task) {
+            const entry = { globalIndex: task.globalIndex, type: task.assignedTaskType };
+            if (task.assignedTaskType === 'abcd_word' || task.assignedTaskType === 'abcd_gap') {
+                entry.correct = task.correctIndex;
+            } else if (task.assignedTaskType === 'unscramble' || task.assignedTaskType === 'gap_hint') {
+                entry.correct = task.word;
+            } else if (task.assignedTaskType === 'match_trans' || task.assignedTaskType === 'match_def') {
+                entry.correct = task.correctMatchKey;
+            }
+            return entry;
+        }
+
+        // Wywołane wyłącznie z przycisku "Zadaj jako zadanie", widocznego tylko
+        // gdy window.TGP_HOST === 'teacher-app'. currentTest jest już wypełniony
+        // przez prepareSingleTestData() (handleGenerateTest), bo ten przycisk
+        // siedzi na path-selection-view, czyli po wygenerowaniu testu.
+        function handleFreezeAssignment() {
+            const questions = currentTest.map(stripQuestionForFreeze);
+            const answerKey = currentTest.map(buildAnswerKeyEntry);
+            const meta = {
+                subtitle: CONFIG.subtitle,
+                categories: getSelectedCategoryNames(),
+                taskTypes: getSelectedTaskTypeNames(),
+                totalQuestions: currentTest.length
+            };
+            window.parent.postMessage({ type: 'tgp:freeze', questions, answerKey, meta }, '*');
+        }
+
+        // Ten sam reset co startInteractiveTest() na zwykłej ścieżce - wspólna
+        // funkcja, żeby zamrożone (odarte ze stanu) pytania ucznia odtworzyły
+        // dokładnie ten sam stan startowy, jaki dostaje zwykły interaktywny test.
+        function resetTaskRuntimeState(q) {
+            q.isCompleted = false; q.earnedXP = 0; q.userSelectedIdx = null; q.userText = "";
+            q.usedHint = false; q.usedAnswer = false; q.timedOut = false;
+            if (q.assignedTaskType && q.assignedTaskType.indexOf('match') === 0) {
+                q.attempts = 1; q.completedConnections = []; q.matchStateMemory = { selectedLeft: null, selectedRight: null, connections: [] };
+            }
+        }
+
+        let assignmentTabLeaves = 0;
+        let assignmentStartedAt = null;
+        let assignmentTimerInterval = null;
+        let assignmentTimerRemaining = 0;
+
+        function initAssignmentMode() {
+            const a = window.TGP_ASSIGNMENT;
+            document.getElementById('config-view').classList.add('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+
+            studentName = String(a.studentName || 'Uczeń');
+            currentTest = a.questions.map(q => ({ ...q }));
+            currentTest.forEach(resetTaskRuntimeState);
+            currentQuestionIndex = 0;
+            studentXP = 0;
+            assignmentStartedAt = new Date().toISOString();
+            assignmentTabLeaves = 0;
+
+            document.getElementById('quiz-view').classList.remove('hidden');
+            document.getElementById('student-header-name').innerText = studentName;
+            document.getElementById('student-avatar').innerText = (studentName[0] || 'U').toUpperCase();
+            document.getElementById('student-xp').innerText = "0 XP";
+
+            // Tryb ucznia: brak drogi powrotu do config-view/path-selection-view
+            // (generator, druk, klucz odpowiedzi) - przycisk "Abort" nie istnieje
+            // w tym trybie, nie tylko jest ukryty (patrz też early-return w
+            // abortToDashboard/triggerDirectPrint/buildPrintDOM).
+            const abortBtn = document.getElementById('tg-abort-btn');
+            if (abortBtn) abortBtn.remove();
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) assignmentTabLeaves++;
+            });
+
+            renderQuestion();
+        }
+
+        function clearAssignmentTimer() {
+            if (assignmentTimerInterval) { clearInterval(assignmentTimerInterval); assignmentTimerInterval = null; }
+            const el = document.getElementById('assignment-timer');
+            if (el) el.classList.add('hidden');
+        }
+
+        function startAssignmentTimerFor(task) {
+            const seconds = window.TGP_ASSIGNMENT && window.TGP_ASSIGNMENT.secondsPerQuestion;
+            if (!seconds || task.isCompleted) return;
+            const multiplier = (task.assignedTaskType && task.assignedTaskType.indexOf('match') === 0) ? 2 : 1;
+            assignmentTimerRemaining = Math.round(seconds * multiplier);
+            const el = document.getElementById('assignment-timer');
+            if (!el) return;
+            el.classList.remove('hidden');
+            el.innerText = `⏱ ${assignmentTimerRemaining}s`;
+            assignmentTimerInterval = setInterval(() => {
+                assignmentTimerRemaining--;
+                if (assignmentTimerRemaining <= 0) {
+                    clearInterval(assignmentTimerInterval); assignmentTimerInterval = null;
+                    el.innerText = `⏱ 0s`;
+                    handleAssignmentTimeExpired(task);
+                } else {
+                    el.innerText = `⏱ ${assignmentTimerRemaining}s`;
+                }
+            }, 1000);
+        }
+
+        function handleAssignmentTimeExpired(task) {
+            if (task.isCompleted) return;
+            task.isCompleted = true;
+            task.earnedXP = 0;
+            task.timedOut = true;
+            studentXP = currentTest.reduce((acc, curr) => acc + (curr.earnedXP || 0), 0);
+            document.getElementById('student-xp').innerText = `${studentXP} XP`;
+            if (currentQuestionIndex === currentTest.length - 1) {
+                finishTest();
+            } else {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        function buildAnswerForTask(task) {
+            const base = {
+                globalIndex: task.globalIndex,
+                type: task.assignedTaskType,
+                usedHint: !!task.usedHint,
+                usedAnswer: !!task.usedAnswer,
+                attempts: task.attempts || 1,
+                timedOut: !!task.timedOut
+            };
+            if (task.assignedTaskType === 'abcd_word' || task.assignedTaskType === 'abcd_gap') {
+                base.selectedIdx = (task.userSelectedIdx === undefined) ? null : task.userSelectedIdx;
+            } else if (task.assignedTaskType === 'unscramble' || task.assignedTaskType === 'gap_hint') {
+                base.text = task.userText || '';
+            } else if (task.assignedTaskType === 'match_trans' || task.assignedTaskType === 'match_def') {
+                base.connections = (task.completedConnections || []).map(c => {
+                    const leftIdx = task.frozenLeft.indexOf(c.leftWord);
+                    const rightIdx = task.frozenRight.findIndex(r => r.parentWord === c.rightWordParent);
+                    return `${leftIdx + 1}${['A', 'B', 'C', 'D'][rightIdx]}`;
+                });
+            }
+            return base;
+        }
+
+        function submitAssignment() {
+            const answers = currentTest.map(buildAnswerForTask);
+            window.parent.postMessage({
+                type: 'tgp:submit',
+                answers,
+                tabLeaves: assignmentTabLeaves,
+                startedAt: assignmentStartedAt,
+                finishedAt: new Date().toISOString(),
+                clientScore: studentXP
+            }, '*');
         }
 
         // Helpers
@@ -3259,13 +3513,24 @@ video {
             return array;
         }
 
+        // Symmetric near-synonym check: true if either word's excludeDistractors
+        // list names the other. Prevents e.g. "insulted" and "offended" from ever
+        // being served as each other's wrong-answer option in abcd-style tasks,
+        // where (unlike gap_hint) there is no letter hint to help tell them apart.
+        function isSynonymPair(a, b) {
+            if ((a.excludeDistractors || []).includes(b.word)) return true;
+            if ((b.excludeDistractors || []).includes(a.word)) return true;
+            return false;
+        }
+
         function getDistractorStrings(excludeObj, fieldName, count) {
-            const filtered = allWordsData.filter(item => item.word !== excludeObj.word);
+            const filtered = allWordsData.filter(item => item.word !== excludeObj.word && !isSynonymPair(excludeObj, item));
             return shuffle(filtered).slice(0, count).map(item => item[fieldName]);
         }
 
         function getDistractorObjects(excludeWord, count) {
-            const filtered = allWordsData.filter(item => item.word !== excludeWord);
+            const excludeObj = allWordsData.find(item => item.word === excludeWord);
+            const filtered = allWordsData.filter(item => item.word !== excludeWord && (!excludeObj || !isSynonymPair(excludeObj, item)));
             return shuffle(filtered).slice(0, count);
         }
 
@@ -3487,8 +3752,12 @@ video {
         }
 
         function abortToDashboard() {
+            // Tryb ucznia: config-view/path-selection-view (generator, druk,
+            // klucz odpowiedzi) nigdy nie mają się odsłonić - blokada w samej
+            // funkcji, nie tylko przez ukrycie/usunięcie przycisku.
+            if (isAssignmentMode()) return;
             executeBulletproofStateTeardown();
-            
+
             document.getElementById('path-selection-view').classList.add('hidden');
             document.getElementById('quiz-view').classList.add('hidden');
             document.getElementById('student-start-view').classList.add('hidden');
@@ -3498,6 +3767,8 @@ video {
 
         // STEP 3A: DIRECT PRINT (always includes answer key on a separate page)
         function triggerDirectPrint() {
+            // Tryb ucznia: brak drogi do druku z kluczem odpowiedzi.
+            if (isAssignmentMode()) return;
             buildPrintDOM(); // Build print DOM with answer key always included
             
             // Use standard timeout to ensure DOM paints before print dialog locks thread
@@ -3524,11 +3795,7 @@ video {
             currentQuestionIndex = 0;
             
             // Safety clean view states if they were somehow manipulated
-            currentTest.forEach(q => { 
-                q.isCompleted = false; q.earnedXP = 0; q.userSelectedIdx = null; q.userText = ""; 
-                q.usedHint = false; q.usedAnswer = false;
-                if(q.attempts !== undefined) { q.attempts = 1; q.completedConnections = []; q.matchStateMemory = { selectedLeft: null, selectedRight: null, connections: [] }; }
-            });
+            currentTest.forEach(resetTaskRuntimeState);
             
             document.getElementById('student-start-view').classList.add('hidden');
             document.getElementById('main-header').classList.add('hidden');
@@ -3555,10 +3822,12 @@ video {
             navContainer.innerHTML = '';
             feedbackContainer.innerHTML = '';
             feedbackContainer.className = 'mt-8 text-center font-extrabold text-2xl relative z-20 hidden w-full';
-            
+
             if (activeResizeListener) {
                 window.removeEventListener('resize', activeResizeListener);
             }
+
+            clearAssignmentTimer();
 
             const task = currentTest[currentQuestionIndex];
             
@@ -3571,8 +3840,8 @@ video {
             document.getElementById('progress-bar-fill').style.width = `${((currentQuestionIndex) / currentTest.length) * 100}%`;
             document.getElementById('progress-fraction').innerText = `${Math.round((currentQuestionIndex / currentTest.length) * 100)}%`;
 
-            // DYNAMIC BUTTON GENERATION: BACK
-            if (currentQuestionIndex > 0) {
+            // DYNAMIC BUTTON GENERATION: BACK (hidden in assignment mode - prevents timer-reset cheating)
+            if (currentQuestionIndex > 0 && !isAssignmentMode()) {
                 const backBtn = document.createElement('button');
                 backBtn.innerText = "← Back";
                 // SYMMETRICAL STYLING
@@ -3592,6 +3861,10 @@ video {
             // DYNAMIC BUTTON GENERATION: NEXT (If already completed)
             if (task.isCompleted) {
                 buildNextButton(navContainer, task);
+            }
+
+            if (isAssignmentMode()) {
+                startAssignmentTimerFor(task);
             }
         }
 
@@ -4083,6 +4356,9 @@ video {
         // 6. HIGH-FIDELITY PRINT RENDERING (SSOT STRICT SCORING)
         // ==========================================
         function buildPrintDOM() {
+            // Tryb ucznia: klucz odpowiedzi/wydruk nie mają się zbudować,
+            // nawet gdy funkcja jest wywołana bezpośrednio z konsoli.
+            if (isAssignmentMode()) return;
             const printContainer = document.getElementById('print-view');
             
             // STRICT 1-TO-1 PAPER SCORING: Total Score MUST equal the exact number of generated questions.
@@ -4137,6 +4413,7 @@ video {
 
         // --- CONGRATULATIONS SCREEN ---
         function finishTest() {
+            clearAssignmentTimer();
             document.getElementById('progress-bar-fill').style.width = '100%';
             document.getElementById('progress-fraction').innerText = '100%';
             document.getElementById('section-header').innerHTML = `<h2 class="tg-title">TEST COMPLETED</h2>`;
@@ -4169,6 +4446,10 @@ video {
                     <p class="tg-tagline">Test completed. Here is your score.</p>
                 </div>`;
 
+            // Tryb zadania nie ma dashboardu do powrotu - przycisk "Exit to
+            // Dashboard" po prostu się nie renderuje, resztę zostawiamy.
+            const exitBtnHtml = isAssignmentMode() ? '' : `<button type="button" class="tg-cta" id="tg-exit-btn">Exit to Dashboard</button>`;
+
             oContainer.innerHTML = `
                 <div class="tg-summary mt-8">
                     <p class="tg-summary-label">Final Score</p>
@@ -4176,15 +4457,22 @@ video {
                     <span class="tg-result-badge ${badgeClass}">${percentage}%</span>
                 </div>
                 <div class="tg-actions-row">
-                    <button type="button" class="tg-cta" id="tg-exit-btn">Exit to Dashboard</button>
+                    ${exitBtnHtml}
                     <button type="button" class="tg-cta tg-cta-alt" id="tg-save-btn">Save</button>
                     <button type="button" class="tg-cta tg-cta-alt" id="tg-share-btn">Share</button>
                 </div>
                 <p class="tg-share-status" id="tg-share-status"></p>`;
 
-            document.getElementById('tg-exit-btn').onclick = abortToDashboard;
+            const exitBtn = document.getElementById('tg-exit-btn');
+            if (exitBtn) exitBtn.onclick = abortToDashboard;
             document.getElementById('tg-save-btn').onclick = () => saveResult(studentXP, maxXP, percentage, badgeClass, message);
             document.getElementById('tg-share-btn').onclick = () => shareResultOnly(studentXP, maxXP, percentage, badgeClass, message);
+
+            // Silnik nie robi żadnych fetchy - tylko postMessage do rodzica
+            // (aplikacja nauczyciela/PWA), zgodnie z zasadą offline-first.
+            if (isAssignmentMode()) {
+                submitAssignment();
+            }
         }
 
         // === SAVE / SHARE RESULT (mirrors Fiszki_*.html) ===============
@@ -4332,6 +4620,7 @@ video {
         var HOMEWORK = HUB.homework || [];
         var MEDIA = HUB.media || [];
         var PRONUNCIATION = HUB.pronunciation || [];
+        var WRITING = HUB.writingSpeaking || [];
         // Tryb pliku. "month" to hub miesieczny ucznia (slownictwo z jego lekcji,
         // gramatyka, wymowa, zdania, czasowniki). "unit" to strona jednego dzialu
         // z podrecznika: te same fiszki i ten sam test, tylko karmione slownictwem
@@ -4477,14 +4766,14 @@ video {
                 };
             } catch (e) { /* ignore */ }
         }
-        function speak(text, lang) {
+        function speak(text, lang, rate) {
             if (!speechSupported || !text) return;
             try {
                 window.speechSynthesis.cancel();
                 if (!voicesResolved) { cachedVoice = resolveVoice(); }
                 var u = new window.SpeechSynthesisUtterance(text);
                 u.lang = lang || 'en-GB';
-                u.rate = 0.9;
+                u.rate = rate || 0.9;
                 if (cachedVoice) u.voice = cachedVoice;
                 window.speechSynthesis.speak(u);
             } catch (e) { /* wymowa jest dodatkiem, nigdy nie blokuje nauki */ }
@@ -4492,12 +4781,16 @@ video {
         function stopSpeaking() {
             if (!speechSupported) return;
             try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+            stopWritingPlayback();
         }
 
         var SPEAKER_SVG = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">' +
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ' +
             'd="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M6 9H4a1 1 0 00-1 1v4a1 1 0 001 1h2l4 4V5L6 9z">' +
             '</path></svg>';
+        var PLAY_SVG = '<svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
+        var PAUSE_SVG = '<svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg>';
+        var STOP_SVG = '<svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6z"></path></svg>';
 
         // ==========================================
         // Router widokow
@@ -4510,11 +4803,12 @@ video {
             media:         'hub-media-view',
             verbs:         'hub-verbs-view',
             pronunciation: 'hub-pronunciation-view',
+            writing:       'hub-writing-view',
             sentences:     'hub-sentences-view'
         };
         var ALL_VIEW_IDS = [
             'hub-home-view', 'flashcards-view', 'config-view',
-            'hub-grammar-view', 'hub-media-view', 'hub-pronunciation-view', 'hub-sentences-view', 'hub-verbs-view',
+            'hub-grammar-view', 'hub-media-view', 'hub-pronunciation-view', 'hub-writing-view', 'hub-sentences-view', 'hub-verbs-view',
             'path-selection-view', 'student-start-view', 'quiz-view'
         ];
 
@@ -4621,6 +4915,7 @@ video {
                 { key: 'media',         icon: '🎬', label: 'Artykuły/Wideo', sub: count(MEDIA.length, 'materiał', 'materiały', 'materiałów') + ' do obejrzenia/przeczytania', count: MEDIA.length },
                 { key: 'verbs',         icon: '🔄', label: 'Czasowniki nieregularne', sub: VERB_ROUND_SIZE + ' na rundę z ' + VERB_BANK.length + ' w banku', count: VERB_BANK.length },
                 { key: 'pronunciation', icon: '🔊', label: 'Wymowa',    sub: count(PRONUNCIATION.length, 'słówko', 'słówka', 'słówek') + ' do posłuchania', count: PRONUNCIATION.length },
+                { key: 'writing',       icon: '📖', label: 'Teksty', sub: count(WRITING.length, 'tekst', 'teksty', 'tekstów') + ' do przeczytania/napisania', count: WRITING.length },
                 { key: 'sentences',     icon: '✍️', label: 'Ułóż zdania', sub: count(SENT_COUNT, 'słówko', 'słówka', 'słówek') + ' z puli ' + SENT_POOL.length + ', losowo', count: SENT_POOL.length }
             ];
             // Kafelek czasownikow inaczej wyszedlby na stronie Unitu aktywny, bo
@@ -4838,6 +5133,281 @@ video {
                 btn.blur();
                 var item = PRONUNCIATION[parseInt(btn.getAttribute('data-hub-speak'), 10)];
                 if (item) speak(item.word, 'en-GB');
+            });
+        }
+
+        // ==========================================
+        // Teksty (dawniej Pisanie/Mowienie)
+        // ==========================================
+        // Lektor traktuje kropke po skrocie ("6 a.m.") jak zwykla kropke i czyta
+        // dalej bez oddechu, co brzmi jak jedno zdanie bez sensu. Dzielimy tekst
+        // na zdania i odtwarzamy je jako osobne wypowiedzi z krotka przerwa
+        // miedzy nimi - to samo, co naturalna pauza po kropce, tylko wymuszona
+        // recznie zamiast liczyc na to, ze silnik mowy ja doda sam.
+        //
+        // Pierwsza wersja tej funkcji (match z [^.!?]+[.!?]+) gubila fragmenty
+        // tekstu na skrotach typu "a.m."/"p.m.": "6 a.m. My mum" zawiera DWIE
+        // kropki blisko siebie, regex probowal dopasowac granice zdania miedzy
+        // nimi, nie znajdowal spacji po pierwszej kropce i String.match po
+        // prostu POMIJAL caly nietrafiony fragment zamiast go zwrocic - efekt:
+        // "On Monday, I wake up at 6 a." znikalo bez sladu, a odtwarzanie
+        // zaczynalo sie od "m. My mum...". Teraz najpierw chronimy WEWNETRZNA
+        // kropke skrotu (miedzy "a"/"p" a "m"), zeby nie zostala wziednieta pod
+        // uwage jako koniec zdania, ale zostawiamy kropke PO "m" nietknieta -
+        // to ona daje szukana pauze. Dzielimy przez zamiane widocznej granicy
+        // zdania na marker i split() - bez regexowego "match", wiec zaden
+        // fragment tekstu nie moze zostac po cichu porzucony.
+        function splitIntoSentences(text) {
+            var str = String(text || '').trim();
+            if (!str) return [];
+            var ABBR_MARK = '';
+            var BREAK_MARK = '';
+            var guarded = str.replace(/\b([AaPp])\.(m\.)/g, function (_, letter, rest) {
+                return letter + ABBR_MARK + rest;
+            });
+            var withBreaks = guarded.replace(/([.!?]+)(\s+)/g, '$1' + BREAK_MARK);
+            return withBreaks.split(BREAK_MARK)
+                .map(function (s) { return s.split(ABBR_MARK).join('.').trim(); })
+                .filter(Boolean);
+        }
+
+        // Offsety znakowe kazdego zdania w calym tekscie - do przeliczania
+        // pozycji paska postepu na numer zdania i z powrotem (przewijanie).
+        function computeCharOffsets(sentences) {
+            var offsets = [];
+            var total = 0;
+            sentences.forEach(function (s) {
+                offsets.push(total);
+                total += s.length;
+            });
+            return { offsets: offsets, total: total || 1 };
+        }
+
+        var writingPlayback = null; // {sessionId, itemIdx, rate, sentences, charOffsets, totalChars, idx, timer, paused, pendingNext}
+        var writingSessionCounter = 0;
+        var writingSlowByItem = {}; // itemIdx -> bool, pamieta wybor tempa niezaleznie od tego, czy aktualnie gra
+
+        function writingRateFor(itemIdx) { return writingSlowByItem[itemIdx] ? 0.75 : 0.9; }
+
+        function updateWritingButtons() {
+            var box = el('hub-writing-list');
+            if (!box) return;
+            var activeIdx = writingPlayback ? writingPlayback.itemIdx : null;
+            var isPaused = writingPlayback ? writingPlayback.paused : false;
+            Array.prototype.forEach.call(box.querySelectorAll('[data-hub-writing-playpause]'), function (b) {
+                var idx = parseInt(b.getAttribute('data-hub-writing-playpause'), 10);
+                var isActivePlaying = (idx === activeIdx && !isPaused);
+                b.innerHTML = isActivePlaying ? PAUSE_SVG : PLAY_SVG;
+                b.setAttribute('aria-label', isActivePlaying ? 'Pauza' : 'Odtwórz');
+            });
+            Array.prototype.forEach.call(box.querySelectorAll('[data-hub-writing-rate]'), function (b) {
+                var idx = parseInt(b.getAttribute('data-hub-writing-rate'), 10);
+                b.classList.toggle('is-active', !!writingSlowByItem[idx]);
+            });
+        }
+
+        function resetWritingSeekBars() {
+            var box = el('hub-writing-list');
+            if (!box) return;
+            Array.prototype.forEach.call(box.querySelectorAll('[data-hub-writing-seek]'), function (bar) {
+                bar.value = 0;
+            });
+        }
+
+        function updateWritingSeekBar(itemIdx, fraction) {
+            var box = el('hub-writing-list');
+            if (!box) return;
+            var bar = box.querySelector('[data-hub-writing-seek="' + itemIdx + '"]');
+            if (!bar || bar.dataset.dragging === '1') return;
+            bar.value = Math.round(Math.max(0, Math.min(1, fraction || 0)) * 1000);
+        }
+
+        function stopWritingPlayback() {
+            if (writingPlayback && writingPlayback.timer) clearTimeout(writingPlayback.timer);
+            try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+            writingPlayback = null;
+            updateWritingButtons();
+            resetWritingSeekBars();
+        }
+
+        function playWritingSentence() {
+            var wp = writingPlayback;
+            if (!wp) return;
+            var mySession = wp.sessionId;
+            if (wp.idx >= wp.sentences.length) { stopWritingPlayback(); return; }
+            updateWritingSeekBar(wp.itemIdx, (wp.charOffsets[wp.idx] || 0) / wp.totalChars);
+            try {
+                var u = new window.SpeechSynthesisUtterance(wp.sentences[wp.idx]);
+                u.lang = 'en-GB';
+                u.rate = wp.rate;
+                if (cachedVoice) u.voice = cachedVoice;
+                u.onboundary = function (ev) {
+                    if (!writingPlayback || writingPlayback.sessionId !== mySession) return;
+                    var base = writingPlayback.charOffsets[writingPlayback.idx] || 0;
+                    updateWritingSeekBar(writingPlayback.itemIdx, (base + (ev.charIndex || 0)) / writingPlayback.totalChars);
+                };
+                u.onend = function () {
+                    if (!writingPlayback || writingPlayback.sessionId !== mySession) return;
+                    writingPlayback.idx++;
+                    // Krotka cisza miedzy zdaniami - to jest ta brakujaca pauza.
+                    writingPlayback.timer = setTimeout(playWritingSentence, 350);
+                };
+                window.speechSynthesis.speak(u);
+            } catch (e) { stopWritingPlayback(); }
+        }
+
+        function startWritingPlayback(itemIdx, startIdx) {
+            var item = WRITING[itemIdx];
+            if (!item) return;
+            try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+            if (writingPlayback && writingPlayback.timer) clearTimeout(writingPlayback.timer);
+            var sentences = splitIntoSentences(item.text);
+            var meta = computeCharOffsets(sentences);
+            writingSessionCounter++;
+            writingPlayback = {
+                sessionId: writingSessionCounter,
+                itemIdx: itemIdx,
+                rate: writingRateFor(itemIdx),
+                sentences: sentences,
+                charOffsets: meta.offsets,
+                totalChars: meta.total,
+                idx: Math.max(0, Math.min(startIdx || 0, sentences.length - 1)),
+                timer: null,
+                paused: false,
+                pendingNext: false
+            };
+            updateWritingButtons();
+            playWritingSentence();
+        }
+
+        function pauseWritingPlayback() {
+            if (!writingPlayback || writingPlayback.paused) return;
+            writingPlayback.paused = true;
+            if (writingPlayback.timer) {
+                clearTimeout(writingPlayback.timer);
+                writingPlayback.timer = null;
+                writingPlayback.pendingNext = true;
+            } else {
+                try { window.speechSynthesis.pause(); } catch (e) { /* ignore */ }
+            }
+            updateWritingButtons();
+        }
+
+        function resumeWritingPlayback() {
+            if (!writingPlayback || !writingPlayback.paused) return;
+            var itemIdx = writingPlayback.itemIdx;
+            var targetRate = writingRateFor(itemIdx);
+            if (writingPlayback.rate !== targetRate) {
+                // Tempo zmienilo sie w trakcie pauzy - nie da sie zmienic tempa
+                // wypowiedzi, ktora juz zaczela sie odtwarzac, wiec zaczynamy
+                // biezace zdanie od nowa, ale w nowym tempie.
+                startWritingPlayback(itemIdx, writingPlayback.idx);
+                return;
+            }
+            writingPlayback.paused = false;
+            if (writingPlayback.pendingNext) {
+                writingPlayback.pendingNext = false;
+                playWritingSentence();
+            } else {
+                try { window.speechSynthesis.resume(); } catch (e) { /* ignore */ }
+            }
+            updateWritingButtons();
+        }
+
+        function toggleWritingPlayPause(itemIdx) {
+            if (writingPlayback && writingPlayback.itemIdx === itemIdx) {
+                if (writingPlayback.paused) resumeWritingPlayback();
+                else pauseWritingPlayback();
+            } else {
+                startWritingPlayback(itemIdx, 0);
+            }
+        }
+
+        function toggleWritingSlowMode(itemIdx) {
+            writingSlowByItem[itemIdx] = !writingSlowByItem[itemIdx];
+            updateWritingButtons();
+            if (writingPlayback && writingPlayback.itemIdx === itemIdx && !writingPlayback.paused) {
+                // Tempo zmienia sie natychmiast - zaczynamy biezace zdanie od nowa w nowym tempie.
+                startWritingPlayback(itemIdx, writingPlayback.idx);
+            }
+        }
+
+        function seekWritingPlayback(itemIdx, fraction) {
+            var item = WRITING[itemIdx];
+            if (!item) return;
+            var sentences = splitIntoSentences(item.text);
+            var meta = computeCharOffsets(sentences);
+            var targetChar = fraction * meta.total;
+            var idx = 0;
+            for (var i = 0; i < meta.offsets.length; i++) {
+                if (meta.offsets[i] <= targetChar) idx = i; else break;
+            }
+            startWritingPlayback(itemIdx, idx);
+        }
+
+        function renderWriting() {
+            var box = el('hub-writing-list');
+            if (!box) return;
+            var groups = groupByLesson(WRITING);
+            if (!groups.length) {
+                box.innerHTML = '<p class="hub-empty">Na razie brak tekst&oacute;w do przeczytania na g&#322;os ani do napisania.</p>';
+                return;
+            }
+            box.innerHTML = groups.map(function (grp, gi) {
+                var isLast = (gi === groups.length - 1);
+                var head = '<summary class="hub-section-title' + (gi === 0 ? ' is-first' : '') + '">' +
+                    escapeHtml(grp.label) + (grp.dateLabel ? ' &middot; ' + escapeHtml(grp.dateLabel) : '') + '</summary>';
+                var body = grp.items.map(function (w) {
+                    var flatIdx = WRITING.indexOf(w);
+                    var player = speechSupported
+                        ? '<div class="hub-player">' +
+                          '<button type="button" class="hub-player-btn" data-hub-writing-playpause="' + flatIdx + '" aria-label="Odtw&oacute;rz">' + PLAY_SVG + '</button>' +
+                          '<button type="button" class="hub-player-btn" data-hub-writing-stop="' + flatIdx + '" aria-label="Stop">' + STOP_SVG + '</button>' +
+                          '<button type="button" class="hub-player-btn hub-player-rate" data-hub-writing-rate="' + flatIdx + '" aria-label="Wolniej (0,75x)">0.75x</button>' +
+                          '<input type="range" class="hub-player-seek" data-hub-writing-seek="' + flatIdx + '" min="0" max="1000" value="0" aria-label="Przewijanie">' +
+                          '</div>'
+                        : '';
+                    return '<div class="hub-pron">' +
+                        '<div class="hub-pron-body">' +
+                        (w.title ? '<p class="hub-pron-word">' + escapeHtml(w.title) + '</p>' : '') +
+                        player +
+                        '<p class="hub-msg-body">' + escapeAndLinkify(w.text || '') + '</p>' +
+                        '</div></div>';
+                }).join('');
+                return '<details class="hub-lesson-group"' + (isLast ? ' open' : '') + '>' + head + body + '</details>';
+            }).join('');
+
+            box.addEventListener('click', function (e) {
+                var playPauseBtn = e.target.closest ? e.target.closest('[data-hub-writing-playpause]') : null;
+                var stopBtn = e.target.closest ? e.target.closest('[data-hub-writing-stop]') : null;
+                var rateBtn = e.target.closest ? e.target.closest('[data-hub-writing-rate]') : null;
+                if (playPauseBtn) {
+                    playPauseBtn.blur();
+                    toggleWritingPlayPause(parseInt(playPauseBtn.getAttribute('data-hub-writing-playpause'), 10));
+                    return;
+                }
+                if (stopBtn) {
+                    stopBtn.blur();
+                    stopWritingPlayback();
+                    return;
+                }
+                if (rateBtn) {
+                    rateBtn.blur();
+                    toggleWritingSlowMode(parseInt(rateBtn.getAttribute('data-hub-writing-rate'), 10));
+                }
+            });
+
+            box.addEventListener('input', function (e) {
+                var bar = e.target.closest ? e.target.closest('[data-hub-writing-seek]') : null;
+                if (!bar) return;
+                bar.dataset.dragging = '1';
+            });
+            box.addEventListener('change', function (e) {
+                var bar = e.target.closest ? e.target.closest('[data-hub-writing-seek]') : null;
+                if (!bar) return;
+                bar.dataset.dragging = '0';
+                var itemIdx = parseInt(bar.getAttribute('data-hub-writing-seek'), 10);
+                seekWritingPlayback(itemIdx, parseInt(bar.value, 10) / 1000);
             });
         }
 
@@ -5943,6 +6513,7 @@ video {
                 renderGrammar();
                 renderMedia();
                 renderPronunciation();
+                renderWriting();
 
                 loadSentences();
                 renderSentLessonChips();
