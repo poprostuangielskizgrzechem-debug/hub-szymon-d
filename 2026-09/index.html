@@ -2574,6 +2574,16 @@ video {
             .hub-ex-input { border: 1.5px solid #d6d9df; border-radius: 8px; background: #fff; color: var(--hub-ink); font: inherit;
                 padding: 2px 8px; margin: 0 3px; outline: none; max-width: 100%; box-sizing: border-box; }
             .hub-ex-item .hub-ex-input { max-width: 12em; }
+            .hub-ex-tf { display: flex; gap: 6px; line-height: 1.5; }
+            .hub-ex-tf-body { flex: 1; min-width: 0; }
+            .hub-ex-tf-src { margin-bottom: 6px; }
+            .hub-ex-item .hub-ex-tf-input { max-width: none; width: 100%; box-sizing: border-box; }
+            .hub-ex-tf-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+            .hub-ex-tf-actions .hub-ex-btn:disabled { opacity: .45; cursor: default; }
+            .hub-ex-tf-status { font-size: 14px; color: #6b7280; }
+            .hub-ex-tf-status.is-ok { color: #15803d; font-weight: 600; }
+            .hub-ex-tf-status.is-bad { color: #b91c1c; font-weight: 600; }
+            .hub-ex-tf-key { color: #15803d; font-weight: 600; margin-top: 4px; }
             .hub-ex-input:focus { border-color: #1e5aae; }
             .hub-ex-input.is-ok { border-color: #1f9254; background: #eafaf0; color: #15803d; }
             .hub-ex-input.is-bad { border-color: #ee4352; background: #fdecec; color: #b91c1c; }
@@ -6731,6 +6741,12 @@ video {
             return String(v || '').toLowerCase().replace(/[‘’`]/g, "'").replace(/\s+/g, ' ').trim();
         }
         function exAccepted(a) { return Array.isArray(a) ? a : [a]; }
+        // layout "transform": cale zdanie, wiec kropka/wykrzyknik na koncu nie decyduje.
+        function exMatch(ex, a, v) {
+            var f = ex && ex.layout === 'transform'
+                ? function (x) { return exNorm(x).replace(/\s*[.!?]+$/, ''); } : exNorm;
+            return !!String(v || '').trim() && exAccepted(a).some(function (x) { return f(x) === f(v); });
+        }
         function exLoad() {
             try { var o = JSON.parse(safeGet(EX_KEY) || '{}'); return (o && typeof o === 'object') ? o : {}; }
             catch (e) { return {}; }
@@ -6741,6 +6757,8 @@ video {
             if (!exState[k] || typeof exState[k] !== 'object') exState[k] = { v: {}, checked: false, peeked: false };
             if (!exState[k].v) exState[k].v = {};
             if (!exState[k].attempts) exState[k].attempts = 1;
+            if (!exState[k].ic) exState[k].ic = {};   // transform: zdania sprawdzone
+            if (!exState[k].ia) exState[k].ia = {};   // transform: proby per zdanie
             return exState[k];
         }
         function exSave() { safeSet(EX_KEY, JSON.stringify(exState)); }
@@ -6771,7 +6789,7 @@ video {
                     total++;
                     var val = st.v[itIdx + '-' + gap] || '';
                     if (String(val).trim()) filled++;
-                    var good = String(val).trim() && exAccepted(a).some(function (x) { return exNorm(x) === exNorm(val); });
+                    var good = exMatch(ex, a, val) && (ex.layout !== 'transform' || st.ic[itIdx]);
                     if (good) ok++;
                     else wrong.push({
                         num: ex.layout === 'sort' ? it.text
@@ -6957,6 +6975,17 @@ video {
                                 cells + '</tr>';
                         }).join('') +
                         '</tbody></table></div>';
+                } else if (ex.layout === 'transform') {
+                    body = ex.items.map(function (it, itIdx) {
+                        return '<div class="hub-ex-item hub-ex-tf"><span class="hub-ex-num">' + (itIdx + 1) + '.</span>' +
+                            '<div class="hub-ex-tf-body"><div class="hub-ex-tf-src">' + escapeHtml(it.text) + '</div>' +
+                            '<input type="text" class="hub-ex-input hub-ex-tf-input" autocomplete="off" autocapitalize="off" spellcheck="false" data-ex="' + exIdx + '" data-it="' + itIdx + '" data-gap="0">' +
+                            '<div class="hub-ex-tf-actions">' +
+                            '<button type="button" class="hub-ex-btn hub-ex-btn-main" data-tf-check="' + exIdx + '" data-it="' + itIdx + '">Sprawd&#378;</button>' +
+                            '<button type="button" class="hub-ex-btn" data-tf-fix="' + exIdx + '" data-it="' + itIdx + '">&#9998; Popraw</button>' +
+                            '<button type="button" class="hub-ex-btn" data-tf-reset="' + exIdx + '" data-it="' + itIdx + '">&#8635; Resetuj</button>' +
+                            '<span class="hub-ex-tf-status" data-tf-status="' + exIdx + '-' + itIdx + '"></span></div></div></div>';
+                    }).join('');
                 } else {
                     body = ex.items.map(function (it, itIdx) {
                         return '<div class="hub-ex-item"><span class="hub-ex-num">' + (itIdx + 1) + '.</span>' + itemHtml(it, itIdx) + '</div>';
@@ -6979,7 +7008,7 @@ video {
                     '</summary>' +
                     (ex.instructions ? '<p class="hub-ex-instr">' + escapeHtml(ex.instructions) + '</p>' : '') +
                     wordBox + body +
-                    (isSelf ? '' :
+                    (isSelf || ex.layout === 'transform' ? '' :
                     '<div class="hub-ex-actions">' +
                     '<button type="button" class="hub-ex-btn hub-ex-btn-main" data-ex-check="' + exIdx + '">Sprawd&#378;</button>' +
                     '<button type="button" class="hub-ex-btn" data-ex-reset="' + exIdx + '">&#8635; Resetuj</button>' +
@@ -7001,10 +7030,11 @@ video {
                 return EXERCISES[+g.getAttribute('data-ex')].items[+g.getAttribute('data-it')].answers[+g.getAttribute('data-gap')];
             }
             function okValue(g, v) {
-                return !!String(v || '').trim() && exAccepted(answerOf(g)).some(function (x) { return exNorm(x) === exNorm(v); });
+                return exMatch(EXERCISES[+g.getAttribute('data-ex')], answerOf(g), v);
             }
             function isLocked(g, st) {
                 if (st.checked) return true;
+                if (EXERCISES[+g.getAttribute('data-ex')].layout === 'transform') return !!st.ic[g.getAttribute('data-it')];
                 if (g.tagName === 'INPUT') return false;
                 var v = st.v[keyOf(g)];
                 return v !== undefined && v !== '';
@@ -7154,7 +7184,7 @@ video {
                         // takze gdy uczen wpisal jedna z nich poprawnie.
                         var acc = exAccepted(answerOf(g));
                         var showAll = EXERCISES[+g.getAttribute('data-ex')].layout === 'wordform' && acc.length > 1;
-                        if (!good || showAll) {
+                        if ((!good || showAll) && EXERCISES[+g.getAttribute('data-ex')].layout !== 'transform') {
                             var k = document.createElement('span');
                             k.className = 'hub-ex-key';
                             k.textContent = '(' + (showAll ? acc.join(' / ') : acc[0]) + ')';
@@ -7169,6 +7199,26 @@ video {
                             if (okValue(g, opt)) b.classList.add('is-ok');
                             else if (opt === v) b.classList.add('is-bad');
                         });
+                    }
+                });
+                if (EXERCISES[exIdx].layout === 'transform') EXERCISES[exIdx].items.forEach(function (it, itIdx) {
+                    var done = !!st.ic[itIdx], good = done && exMatch(EXERCISES[exIdx], it.answers[0], st.v[itIdx + '-0']);
+                    var tries = st.ia[itIdx] || 1;
+                    var q = function (a) { return box.querySelector('[' + a + '="' + exIdx + '"][data-it="' + itIdx + '"]'); };
+                    var c = q('data-tf-check'), f = q('data-tf-fix');
+                    if (c) c.disabled = done;
+                    if (f) f.disabled = !done || good;
+                    var sEl = box.querySelector('[data-tf-status="' + exIdx + '-' + itIdx + '"]');
+                    if (sEl) {
+                        sEl.textContent = (done ? (good ? '✓ Dobrze' : '✗ Jeszcze nie') : '') + (tries > 1 ? (done ? ' · ' : '') + 'próba ' + tries : '');
+                        sEl.className = 'hub-ex-tf-status' + (done ? (good ? ' is-ok' : ' is-bad') : '');
+                        // Po trzeciej nieudanej probie pokaz poprawna odpowiedz.
+                        if (done && !good && tries >= 3) {
+                            var key = document.createElement('div');
+                            key.className = 'hub-ex-tf-key';
+                            key.textContent = 'Poprawnie: ' + exAccepted(it.answers[0])[0];
+                            sEl.appendChild(key);
+                        }
                     }
                 });
                 var s = box.querySelector('[data-ex-score="' + exIdx + '"]');
@@ -7192,7 +7242,7 @@ video {
                 }
                 if (e.target && e.target.classList && e.target.classList.contains('hub-ex-input')) {
                     var g = e.target, st = exSt(+g.getAttribute('data-ex'));
-                    if (st.checked) return;
+                    if (st.checked || g.readOnly) return;
                     st.v[keyOf(g)] = g.value;
                     exSave();
                     refreshExShare();
@@ -7308,6 +7358,31 @@ video {
                     refreshExShare();
                     return;
                 }
+                // transform: Sprawdz/Popraw/Resetuj per zdanie. Popraw odblokowuje wpis
+                // i liczy sie jako kolejna proba; Resetuj czysci pole (po sprawdzeniu
+                // tez kolejna proba, inaczej Resetuj obchodzilby licznik).
+                var tf = e.target.closest ? e.target.closest('[data-tf-check],[data-tf-fix],[data-tf-reset]') : null;
+                if (tf) {
+                    tf.blur();
+                    var tEx = +(tf.getAttribute('data-tf-check') || tf.getAttribute('data-tf-fix') || tf.getAttribute('data-tf-reset'));
+                    var tIt = tf.getAttribute('data-it'), tSt = exSt(tEx);
+                    if (tf.hasAttribute('data-tf-check')) {
+                        if (!String(tSt.v[tIt + '-0'] || '').trim()) return;
+                        tSt.ic[tIt] = true;
+                    } else {
+                        if (tSt.ic[tIt]) tSt.ia[tIt] = (tSt.ia[tIt] || 1) + 1;
+                        tSt.ic[tIt] = false;
+                        if (tf.hasAttribute('data-tf-reset')) delete tSt.v[tIt + '-0'];
+                    }
+                    exSave();
+                    applyEx(tEx);
+                    refreshExShare();
+                    if (tf.hasAttribute('data-tf-fix')) {
+                        var inp = box.querySelector('.hub-ex-input[data-ex="' + tEx + '"][data-it="' + tIt + '"]');
+                        if (inp) inp.focus();
+                    }
+                    return;
+                }
                 var t = e.target.closest ? e.target.closest('[data-ex-check],[data-ex-reset]') : null;
                 if (!t) return;
                 t.blur();
@@ -7334,6 +7409,10 @@ video {
                 Object.keys(st.v).forEach(function (k) { if (k.indexOf('p-') === 0) keep[k] = st.v[k]; });
                 var any = st.checked || Object.keys(st.v).some(function (k) { return k.indexOf('p-') !== 0 && String(st.v[k] || '').trim(); });
                 if (any) st.attempts = (st.attempts || 1) + 1;
+                if (EXERCISES[exIdx].layout === 'transform') {
+                    Object.keys(st.ic).forEach(function (i) { if (st.ic[i]) st.ia[i] = (st.ia[i] || 1) + 1; });
+                    st.ic = {};
+                }
                 st.v = keep;
                 st.checked = false;
                 if (EXERCISES[exIdx].layout === 'sort' || EXERCISES[exIdx].layout === 'drag') { delete st.order; sortSel = null; }
@@ -7365,6 +7444,20 @@ video {
                 var r = exResult(exIdx);
                 if (!exStarted(exIdx)) return;
                 var st = exSt(exIdx);
+                if (ex.layout === 'transform') {
+                    var nChk = Object.keys(st.ic).filter(function (i) { return st.ic[i]; }).length;
+                    lines.push((ex.title || ('Ćwiczenie ' + (exIdx + 1))) + ': ' + r.ok + '/' + r.total + ' pkt' +
+                        (nChk < r.total ? ' (sprawdzone: ' + nChk + ' z ' + r.total + ')' : ''));
+                    var multi = [], bad = [];
+                    ex.items.forEach(function (it, i) {
+                        if ((st.ia[i] || 1) > 1) multi.push((i + 1) + ': ' + st.ia[i]);
+                        if (st.ic[i] && !exMatch(ex, it.answers[0], st.v[i + '-0'])) bad.push('(' + (i + 1) + ') ' + String(st.v[i + '-0'] || '').trim());
+                    });
+                    lines.push(multi.length ? 'Próby (zdanie: liczba): ' + multi.join(', ') : 'Wszystko za pierwszym podejściem.');
+                    if (bad.length) lines.push('Błędy: ' + bad.join(', '));
+                    lines.push('');
+                    return;
+                }
                 var head = (ex.title || ('Ćwiczenie ' + (exIdx + 1))) + ': ' + r.ok + '/' + r.total + ' pkt, próba nr ' + st.attempts;
                 if (!st.checked && r.filled < r.total) head += ' (niedokończone: ' + r.filled + ' z ' + r.total + ')';
                 if (st.peeked) head += ' (podejrzane odpowiedzi)';
