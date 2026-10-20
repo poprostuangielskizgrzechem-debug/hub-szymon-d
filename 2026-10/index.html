@@ -2224,6 +2224,7 @@ video {
             <button type="button" class="hub-nav-btn" data-hub-nav="pronunciation">&#128266; Wymowa</button>
             <button type="button" class="hub-nav-btn" data-hub-nav="writing">&#128214; Teksty</button>
             <button type="button" class="hub-nav-btn" data-hub-nav="exercises">&#128203; &Cacute;wiczenia</button>
+            <button type="button" class="hub-nav-btn" data-hub-nav="games">&#127918; Gry</button>
             <button type="button" class="hub-nav-btn" data-hub-nav="sentences">&#9997;&#65039; Zdania</button>
         </nav>
         <!-- === HUB MODULE - END (nav) === -->
@@ -2612,6 +2613,9 @@ video {
             .hub-ex-table .hub-ex-input { width: 100%; min-width: 90px; text-align: left; }
             .hub-ex-img { width: 1%; }
             .hub-ex-img svg { display: block; height: 40px; width: auto; max-width: 64px; box-shadow: 0 0 0 1px #cbd5e1; }
+            /* rysunek nad calym cwiczeniem (ex.svg), np. drzewo genealogiczne */
+            .hub-ex-figure { margin: 4px 0 14px; text-align: center; }
+            .hub-ex-figure svg { display: inline-block; width: 100%; max-width: 560px; height: auto; }
             .hub-ex-self { padding: 12px 0; border-top: 1px solid var(--hub-line); }
             .hub-ex-self:first-of-type { border-top: none; }
             .hub-ex-self-q { margin: 0 0 6px; line-height: 1.5; }
@@ -2693,6 +2697,33 @@ video {
             </div>
         </section>
         <!-- === HUB MODULE - END (exercises view) === -->
+        <!-- === HUB MODULE - START (games view) === -->
+        <section id="hub-games-view" class="hidden no-print flex-grow flex items-start justify-center relative z-20">
+            <div class="hub-shell">
+                <div class="hub-topbar"></div>
+                <div class="hub-inner">
+
+                    <div class="hub-head">
+                        <h2 class="hub-title">Gry</h2>
+                        <p class="hub-tagline">Gry z angielskim do zagrania na telefonie albo komputerze.</p>
+                    </div>
+
+                    <div id="hub-games-list"></div>
+
+                    <div class="hub-footer">
+                        <button type="button" class="hub-link-btn" data-hub-nav="home">&larr; Powr&oacute;t</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <div id="hub-game-overlay" class="no-print" style="position:fixed; inset:0; z-index:9999; background:#fff; display:none; flex-direction:column;">
+            <div style="display:flex; justify-content:flex-end; padding:6px 10px; border-bottom:1px solid #ddd; background:#f7f7f7;">
+                <button type="button" class="hub-link-btn" id="hub-game-close">&#10005; Zamknij gr&#281;</button>
+            </div>
+            <iframe id="hub-game-frame" title="Gra" style="flex:1; width:100%; border:0;"></iframe>
+        </div>
+        <!-- === HUB MODULE - END (games view) === -->
         <!-- === HUB MODULE - START (sentences view) === -->
         <section id="hub-sentences-view" class="hidden no-print flex-grow flex items-start justify-center relative z-20">
             <div class="hub-shell">
@@ -2911,6 +2942,32 @@ video {
                                     "sentenceWithGap": "The company has a [gap] for a sales assistant, so I sent them my CV.",
                                     "firstLetterHint": "v"
                         }
+            ],
+            "Lekcja 3 (19.10)": [
+                        {
+                                    "word": "youth",
+                                    "translation": "młodzież; młodość",
+                                    "definition": "young people as a group",
+                                    "pos": "n",
+                                    "sentenceWithGap": "The new sports centre was built for the town's [gap], so teenagers have somewhere to meet after school.",
+                                    "firstLetterHint": "y"
+                        },
+                        {
+                                    "word": "assure",
+                                    "translation": "zapewniać (kogoś)",
+                                    "definition": "to tell someone that something is true so they stop worrying",
+                                    "pos": "v",
+                                    "sentenceWithGap": "I [gap] you that your bag is safe with me.",
+                                    "firstLetterHint": "a"
+                        },
+                        {
+                                    "word": "canned goods",
+                                    "translation": "konserwy, żywność w puszkach",
+                                    "definition": "food sold in metal tins",
+                                    "pos": "n",
+                                    "sentenceWithGap": "Before the storm, people bought lots of [gap], like beans and soup, because they last for years.",
+                                    "firstLetterHint": "c"
+                        }
             ]
 };
 
@@ -2923,8 +2980,8 @@ video {
         "teacherWhatsApp": "48665824363",
         "storageKey": "hub_szymon-d_2026-10",
         "studentKey": "hub_szymon-d",
-        "stamp": "aktualizacja po lekcji 2, 12.10.2026",
-        "lastLessonPhrase": "lekcji 2",
+        "stamp": "aktualizacja po lekcji 3, 12.10.2026",
+        "lastLessonPhrase": "lekcji 3",
         "lessons": [
                 {
                         "label": "Lekcja 1",
@@ -2941,6 +2998,14 @@ video {
                         "vocabCount": 3,
                         "extraVocabCount": 0,
                         "topic": "Mowa zależna i pytania pośrednie (Repetytorium maturzysty, str. 285; Focus 4, Reported Speech, str. 144)"
+                },
+                {
+                        "label": "Lekcja 3",
+                        "dateLabel": "19.10.2026",
+                        "categoryKey": "Lekcja 3 (19.10)",
+                        "vocabCount": 3,
+                        "extraVocabCount": 0,
+                        "topic": "Sprawdzenie zadania domowego: Focus 4, Unit 5.2 (Grammar Reference str. 143, zeszyt ćwiczeń 5.2 i 5.5, Online Extra Practice 5.2 zad. 1)"
                 }
         ],
         "grammar": [
@@ -2980,19 +3045,22 @@ video {
                                         "label": "Pytania pośrednie (Indirect questions) | ROCK YOUR ENGLISH #176",
                                         "url": "https://www.youtube.com/watch?v=MTtiimpcR34&t=249s",
                                         "type": "youtube",
-                                        "questions": []
+                                        "questions": [],
+                                        "quizzes": []
                                 },
                                 {
                                         "label": "122. Indirect Questions 1 | SzlifujAngielski.pl",
                                         "url": "https://szlifujangielski.pl/ucz-sie/cwiczenia/122-indirect-questions/",
                                         "type": "test",
-                                        "questions": []
+                                        "questions": [],
+                                        "quizzes": []
                                 },
                                 {
                                         "label": "Indirect questions - Test-English",
                                         "url": "https://test-english.com/grammar-points/b1-b2/indirect-questions/",
                                         "type": "test",
-                                        "questions": []
+                                        "questions": [],
+                                        "quizzes": []
                                 }
                         ]
                 },
@@ -3021,7 +3089,8 @@ video {
                                         "label": "Reporting verbs: Admit doing, refuse to do, etc. - Test-English",
                                         "url": "https://test-english.com/grammar-points/b1-b2/reporting-verbs/",
                                         "type": "test",
-                                        "questions": []
+                                        "questions": [],
+                                        "quizzes": []
                                 }
                         ]
                 }
@@ -3033,6 +3102,12 @@ video {
                         "lessonLabel": "Lekcja 2",
                         "word": "vacant",
                         "translation": "wolny, nieobsadzony",
+                        "note": ""
+                },
+                {
+                        "lessonLabel": "Lekcja 3",
+                        "word": "result",
+                        "translation": "wynik, rezultat",
                         "note": ""
                 }
         ],
@@ -3047,6 +3122,7 @@ video {
                         "columns": [],
                         "wordBox": [],
                         "letters": false,
+                        "strict": false,
                         "items": [
                                 {
                                         "text": "Do you know when [gap]?",
@@ -3309,8 +3385,304 @@ video {
                                         ]
                                 }
                         ]
+                },
+                {
+                        "lessonLabel": "Lekcja 3",
+                        "dateLabel": "19.10.2026",
+                        "title": "Reported speech",
+                        "instructions": "Przekształć zdanie na mowę zależną, używając słowa w nawiasie. Zacznij od osoby, która mówi (np. Mum asked me...).",
+                        "layout": "transform",
+                        "columns": [],
+                        "wordBox": [],
+                        "letters": false,
+                        "strict": false,
+                        "items": [
+                                {
+                                        "text": "'Where did you park the car last night?' Mum asked me. (BEFORE)",
+                                        "answers": [
+                                                [
+                                                        "Mum asked me where I had parked the car the night before."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Can I borrow your charger?' Kasia asked me. (IF)",
+                                        "answers": [
+                                                [
+                                                        "Kasia asked me if she could borrow my charger."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Are you coming to the party tomorrow?' Ola asked me. (WHETHER)",
+                                        "answers": [
+                                                [
+                                                        "Ola asked me whether I was coming to the party the next day.",
+                                                        "Ola asked me whether I was coming to the party the following day."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'I'm meeting my coach today,' Kuba said. (DAY)",
+                                        "answers": [
+                                                [
+                                                        "Kuba said that he was meeting his coach that day.",
+                                                        "Kuba said he was meeting his coach that day."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Don't touch the wet paint,' the teacher told us. (NOT)",
+                                        "answers": [
+                                                [
+                                                        "The teacher told us not to touch the wet paint."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'We moved to Kraków two years ago,' Ania said. (EARLIER)",
+                                        "answers": [
+                                                [
+                                                        "Ania said that they had moved to Kraków two years earlier.",
+                                                        "Ania said they had moved to Kraków two years earlier."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'How long have you been learning English?' the examiner asked me. (HAD)",
+                                        "answers": [
+                                                [
+                                                        "The examiner asked me how long I had been learning English."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'I will call you next week,' Tom told me. (FOLLOWING)",
+                                        "answers": [
+                                                [
+                                                        "Tom told me that he would call me the following week.",
+                                                        "Tom told me he would call me the following week."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'I left my keys here,' Dad said. (THERE)",
+                                        "answers": [
+                                                [
+                                                        "Dad said that he had left his keys there.",
+                                                        "Dad said he had left his keys there."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'What are you doing now?' my brother asked me. (THEN)",
+                                        "answers": [
+                                                [
+                                                        "My brother asked me what I was doing then."
+                                                ]
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "lessonLabel": "Lekcja 3",
+                        "dateLabel": "19.10.2026",
+                        "title": "Reporting verbs",
+                        "instructions": "Uzupełnij zdania poprawną formą czasowników z ramki. Dodaj that, gdy trzeba.",
+                        "layout": "list",
+                        "columns": [],
+                        "wordBox": [
+                                "assure",
+                                "be",
+                                "call",
+                                "cheat",
+                                "help",
+                                "lie",
+                                "not tell",
+                                "should",
+                                "steal",
+                                "wait"
+                        ],
+                        "letters": false,
+                        "strict": false,
+                        "items": [
+                                {
+                                        "text": "He denied [gap] my bike.",
+                                        "answers": [
+                                                [
+                                                        "stealing",
+                                                        "having stolen"
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "She promised [gap] me as soon as she landed.",
+                                        "answers": [
+                                                "to call"
+                                        ]
+                                },
+                                {
+                                        "text": "I warned him [gap] anyone about the surprise.",
+                                        "answers": [
+                                                "not to tell"
+                                        ]
+                                },
+                                {
+                                        "text": "Tom admitted to [gap] in the test.",
+                                        "answers": [
+                                                [
+                                                        "cheating",
+                                                        "having cheated"
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "They accused me of [gap] to them.",
+                                        "answers": [
+                                                "lying"
+                                        ]
+                                },
+                                {
+                                        "text": "She refused [gap] for us.",
+                                        "answers": [
+                                                "to wait"
+                                        ]
+                                },
+                                {
+                                        "text": "I apologised for [gap] late.",
+                                        "answers": [
+                                                "being"
+                                        ]
+                                },
+                                {
+                                        "text": "I (a) [gap] her (b) [gap] I would come back soon.",
+                                        "answers": [
+                                                "assured",
+                                                "that"
+                                        ]
+                                },
+                                {
+                                        "text": "The coach suggested (a) [gap] we (b) [gap] train harder.",
+                                        "answers": [
+                                                "that",
+                                                "should"
+                                        ]
+                                },
+                                {
+                                        "text": "She offered [gap] me with my homework.",
+                                        "answers": [
+                                                "to help"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "lessonLabel": "Lekcja 3",
+                        "dateLabel": "19.10.2026",
+                        "title": "Miks: reported speech i reporting verbs",
+                        "instructions": "Przekształć zdanie, używając słowa w nawiasie.",
+                        "layout": "transform",
+                        "columns": [],
+                        "wordBox": [],
+                        "letters": false,
+                        "strict": false,
+                        "items": [
+                                {
+                                        "text": "'I'll pay you back,' Mark said to me. (PROMISED)",
+                                        "answers": [
+                                                [
+                                                        "Mark promised to pay me back.",
+                                                        "Mark promised that he would pay me back.",
+                                                        "Mark promised he would pay me back."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'You should see a doctor,' Mum said to me. (ADVISED)",
+                                        "answers": [
+                                                [
+                                                        "Mum advised me to see a doctor."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'I didn't break the window,' Jake said. (DENIED)",
+                                        "answers": [
+                                                [
+                                                        "Jake denied breaking the window.",
+                                                        "Jake denied having broken the window."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Do you know where the station is?' a tourist asked me. (IF)",
+                                        "answers": [
+                                                [
+                                                        "A tourist asked me if I knew where the station was."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Let's order a pizza,' Ola said. (SUGGESTED)",
+                                        "answers": [
+                                                [
+                                                        "Ola suggested ordering a pizza.",
+                                                        "Ola suggested that we should order a pizza.",
+                                                        "Ola suggested that we order a pizza.",
+                                                        "Ola suggested we should order a pizza.",
+                                                        "Ola suggested we order a pizza."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Yes, I took your charger,' my sister said. (ADMITTED)",
+                                        "answers": [
+                                                [
+                                                        "My sister admitted taking my charger.",
+                                                        "My sister admitted having taken my charger.",
+                                                        "My sister admitted that she had taken my charger.",
+                                                        "My sister admitted she had taken my charger."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Why did you leave the party early?' Kasia asked me. (HAD)",
+                                        "answers": [
+                                                [
+                                                        "Kasia asked me why I had left the party early."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Don't worry, everything will be fine,' the doctor said to me. (ASSURED)",
+                                        "answers": [
+                                                [
+                                                        "The doctor assured me that everything would be fine.",
+                                                        "The doctor assured me everything would be fine."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'You cheated in the test!' the teacher said to Tom. (ACCUSED)",
+                                        "answers": [
+                                                [
+                                                        "The teacher accused Tom of cheating in the test.",
+                                                        "The teacher accused Tom of having cheated in the test."
+                                                ]
+                                        ]
+                                },
+                                {
+                                        "text": "'Sorry I'm late,' Ania said. (APOLOGISED)",
+                                        "answers": [
+                                                [
+                                                        "Ania apologised for being late."
+                                                ]
+                                        ]
+                                }
+                        ]
                 }
         ],
+        "games": [],
         "distractors": [
                 {
                         "word": "whistle",
@@ -3494,6 +3866,24 @@ video {
                         "lessons": [
                                 "Lekcja 2"
                         ]
+                },
+                {
+                        "word": "youth",
+                        "lessons": [
+                                "Lekcja 3"
+                        ]
+                },
+                {
+                        "word": "assure",
+                        "lessons": [
+                                "Lekcja 3"
+                        ]
+                },
+                {
+                        "word": "canned goods",
+                        "lessons": [
+                                "Lekcja 3"
+                        ]
                 }
         ],
         "sentenceCount": 5,
@@ -3507,6 +3897,11 @@ video {
                         "lessonLabel": "Lekcja 2",
                         "dateLabel": "12.10.2026",
                         "text": "Do matury skup się na zadaniach z czytania, słuchania i słownictwa. Zrób zadania 2 i 3 ze str. 144 w Focus 4 (Student's Book) i test na reporting verbs w zakładce „Gramatyka”. Na następnej lekcji zrobimy zadania z zeszytu ćwiczeń."
+                },
+                {
+                        "lessonLabel": "Lekcja 3",
+                        "dateLabel": "19.10.2026",
+                        "text": "Ćwicz słówka i zrób zadania w zakładce „Ćwiczenia”: mowa zależna, reporting verbs i miks."
                 }
         ]
 };
@@ -4945,6 +5340,7 @@ video {
         var PRONUNCIATION = HUB.pronunciation || [];
         var WRITING = HUB.writingSpeaking || [];
         var EXERCISES = HUB.exercises || [];
+        var GAMES = HUB.games || [];
         // Tryb pliku. "month" to hub miesieczny ucznia (slownictwo z jego lekcji,
         // gramatyka, wymowa, zdania, czasowniki). "unit" to strona jednego dzialu
         // z podrecznika: te same fiszki i ten sam test, tylko karmione slownictwem
@@ -5129,11 +5525,12 @@ video {
             pronunciation: 'hub-pronunciation-view',
             writing:       'hub-writing-view',
             exercises:     'hub-exercises-view',
-            sentences:     'hub-sentences-view'
+            sentences:     'hub-sentences-view',
+            games:         'hub-games-view'
         };
         var ALL_VIEW_IDS = [
             'hub-home-view', 'flashcards-view', 'config-view',
-            'hub-grammar-view', 'hub-media-view', 'hub-pronunciation-view', 'hub-writing-view', 'hub-exercises-view', 'hub-sentences-view', 'hub-verbs-view',
+            'hub-grammar-view', 'hub-media-view', 'hub-pronunciation-view', 'hub-writing-view', 'hub-exercises-view', 'hub-sentences-view', 'hub-verbs-view', 'hub-games-view',
             'path-selection-view', 'student-start-view', 'quiz-view'
         ];
 
@@ -5243,6 +5640,7 @@ video {
                 { key: 'pronunciation', icon: '🔊', label: 'Wymowa',    sub: count(PRONUNCIATION.length, 'słówko', 'słówka', 'słówek') + ' do posłuchania', count: PRONUNCIATION.length },
                 { key: 'writing',       icon: '📖', label: 'Teksty', sub: count(WRITING.length, 'tekst', 'teksty', 'tekstów') + ' do przeczytania/napisania', count: WRITING.length },
                 { key: 'exercises',     icon: '📋', label: 'Ćwiczenia', sub: count(EXERCISES.length, 'ćwiczenie', 'ćwiczenia', 'ćwiczeń') + ' z lukami', count: EXERCISES.length },
+                { key: 'games',         icon: '🎮', label: 'Gry', sub: count(GAMES.length, 'gra', 'gry', 'gier') + ' do zagrania', count: GAMES.length },
                 { key: 'sentences',     icon: '✍️', label: 'Ułóż zdania', sub: count(SENT_COUNT, 'słówko', 'słówka', 'słówek') + ' z puli ' + SENT_POOL.length + ', losowo', count: SENT_POOL.length }
             ];
             // Kafelek czasownikow inaczej wyszedlby na stronie Unitu aktywny, bo
@@ -5460,13 +5858,26 @@ video {
                 box.innerHTML = '<p class="hub-empty">Na razie bez artyku&#322;&oacute;w ani film&oacute;w. Poka&#380;&#261; si&#281; tu po kolejnej lekcji.</p>';
                 return;
             }
+            // Quizy pod artykulem (m.quizzes, 2026-10-14): ABCD albo Prawda/Falsz,
+            // ten sam mechanizm co pytania w Tekstach (wqHandleClick/wqApply).
+            var quizNo = 0;
             box.innerHTML = groups.map(function (grp, gi) {
                 var head = '<p class="hub-section-title' + (gi === 0 ? ' is-first' : '') + '">' +
                     escapeHtml(grp.label) + (grp.dateLabel ? ' &middot; ' + escapeHtml(grp.dateLabel) : '') + '</p>';
-                return head + renderLinks(grp.items.map(function (m) {
-                    return { label: m.label, url: m.url, type: m.type, questions: m.questions };
-                }));
-            }).join('');
+                return head + grp.items.map(function (m) {
+                    var tile = renderLinks([{ label: m.label, url: m.url, type: m.type, questions: m.questions }]);
+                    return tile + (m.quizzes || []).map(function (qz) {
+                        var key = 'm' + (quizNo++);
+                        var w = { wqKey: 'media|' + m.url + '|' + qz.title, title: qz.title, type: qz.type,
+                            article: m.label, section: 'Artykuły/Wideo', questions: qz.questions };
+                        return '<details class="hub-ex-card hub-media-quiz"' + (key === 'm0' ? ' open' : '') + '>' +
+                            '<summary class="hub-ex-head"><span class="hub-ex-title">' + escapeHtml(qz.title) + '</span></summary>' +
+                            writingQuestionsHtml(w, key, true) + '</details>';
+                    }).join('');
+                }).join('');
+            }).join('') + (quizNo ? wqSharePanelHtml('mall') : '');
+            Object.keys(WQ_REG).forEach(function (k) { if (k.charAt(0) === 'm') wqApply(WQ_REG[k], k); });
+            box.addEventListener('click', function (e) { wqHandleClick(e); });
         }
 
         // ==========================================
@@ -5745,10 +6156,65 @@ video {
         }
         function exAccepted(a) { return Array.isArray(a) ? a : [a]; }
         // layout "transform": cale zdanie, wiec kropka/wykrzyknik na koncu nie decyduje.
-        function exMatch(ex, a, v) {
+        // Tolerancja wpisywanych odpowiedzi (decyzja Grzecha 2026-10-17, wszyscy uczniowie):
+        // brak/nadmiar interpunkcji i apostrofow, wersja AmE/BrE oraz drobna literowka
+        // (1 znak w jednym slowie od 5 liter) licza sie jako poprawne. Literowka NIE
+        // obejmuje koncowek -s/-es/-d/-ed/-n, bo to blad gramatyczny. Synonimy dopisuje
+        // sie do answers w hub_input.json. Luki do klikniecia i cwiczenia z
+        // "strict": true (np. "popraw pisownie") porownuja sie dokladnie, jak dawniej.
+        var EX_US_UK = { gray: 'grey', program: 'programme', check: 'cheque', tire: 'tyre', pajamas: 'pyjamas',
+            mom: 'mum', math: 'maths', aluminum: 'aluminium', jewelry: 'jewellery', plow: 'plough', donut: 'doughnut',
+            catalog: 'catalogue', dialog: 'dialogue', analog: 'analogue', skeptical: 'sceptical', mustache: 'moustache',
+            gotten: 'got', fall: 'autumn', apartment: 'flat', vacation: 'holiday', cookie: 'biscuit', cookies: 'biscuits' };
+        function exLoose(x) {
+            return exNorm(x).replace(/can't/g, 'cannot').replace(/won't/g, 'will not').replace(/n't/g, ' not')
+                .replace(/'re /g, ' are ').replace(/'ve /g, ' have ').replace(/'m /g, ' am ').replace(/'ll /g, ' will ').replace(/'/g, '').replace(/[.,!?;:"()“”„–—-]+/g, ' ')
+                .replace(/\s+/g, ' ').trim().split(' ').map(function (w) {
+                    if (EX_US_UK[w]) return EX_US_UK[w];
+                    return w.replace(/^([a-z]*(col|fav|flav|hon|hum|lab|neighb|beh|harb|rum|vap|arm|rig|vig))or(s|ed|ing|ite|ites|ful|able|ly|hood)?$/, '$1our$3')
+                        .replace(/([a-z]{2})(i|y)z(e|es|ed|ing|ation|ations)$/, '$1$2s$3')
+                        .replace(/^(cent|theat|met|lit|fib|kilomet|centimet|millimet)er(s)?$/, '$1re$2')
+                        .replace(/([aeiou])l(ed|ing|er|ers)$/, '$1ll$2');
+                }).join(' ');
+        }
+        function exLev(a, b) {
+            if (Math.abs(a.length - b.length) > 1) return 2;
+            // Damerau: zamiana dwoch sasiednich liter (littel) to tez jedna literowka.
+            var pp = [], prev = [], cur, i, j;
+            for (j = 0; j <= b.length; j++) prev[j] = j;
+            for (i = 1; i <= a.length; i++) {
+                cur = [i];
+                for (j = 1; j <= b.length; j++) {
+                    cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+                    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) cur[j] = Math.min(cur[j], pp[j - 2] + 1);
+                }
+                pp = prev; prev = cur;
+            }
+            return prev[b.length];
+        }
+        function exTypoOk(x, v) {
+            var xw = x.split(' '), vw = v.split(' '), diffs = 0;
+            if (xw.length !== vw.length) return false;
+            for (var i = 0; i < xw.length; i++) {
+                if (xw[i] === vw[i]) continue;
+                var p = xw[i], q = vw[i];
+                if (p.length < 5 || q.length < 5) return false;
+                var lo = p.length <= q.length ? p : q, hi = p.length <= q.length ? q : p;
+                if (hi.indexOf(lo) === 0 && /^(s|es|d|ed|n)$/.test(hi.slice(lo.length))) return false;
+                if (exLev(p, q) > 1) return false;
+                diffs++;
+            }
+            return diffs <= 1;
+        }
+        function exMatch(ex, a, v, choice) {
             var f = ex && ex.layout === 'transform'
                 ? function (x) { return exNorm(x).replace(/\s*[.!?]+$/, ''); } : exNorm;
-            return !!String(v || '').trim() && exAccepted(a).some(function (x) { return f(x) === f(v); });
+            if (!String(v || '').trim()) return false;
+            var acc = exAccepted(a);
+            if (acc.some(function (x) { return f(x) === f(v); })) return true;
+            if (choice || (ex && ex.strict)) return false;
+            var lv = exLoose(v);
+            return !!lv && acc.some(function (x) { var lx = exLoose(x); return lx === lv || exTypoOk(lx, lv); });
         }
         function exLoad() {
             try { var o = JSON.parse(safeGet(EX_KEY) || '{}'); return (o && typeof o === 'object') ? o : {}; }
@@ -5768,6 +6234,16 @@ video {
         function exIsChoice(ex, itIdx, gap) {
             var ch = ex.items[itIdx].choices;
             return !!(ch && ch[gap] && ch[gap].length);
+        }
+        // Same luki do klikniecia (2026-10-13): kazda blokuje sie i ocenia od razu
+        // po kliknieciu, wiec przycisk "Sprawdz" nic by nie dodal i go nie ma.
+        function exAllChoice(ex) {
+            if (['sort', 'drag', 'transform', 'wordform', 'selfcheck'].indexOf(ex.layout) !== -1) return false;
+            var n = 0;
+            var all = ex.items.every(function (it, itIdx) {
+                return (it.answers || []).every(function (a, gi) { n++; return exIsChoice(ex, itIdx, gi); });
+            });
+            return all && n > 0;
         }
         function exLetter(ex, i) { return ex.letters ? String.fromCharCode(65 + i) + ' ' : ''; }
         // layout "table": text pozycji to komorki rozdzielone "|"; przy svg
@@ -5792,7 +6268,7 @@ video {
                     total++;
                     var val = st.v[itIdx + '-' + gap] || '';
                     if (String(val).trim()) filled++;
-                    var good = exMatch(ex, a, val) && (ex.layout !== 'transform' || st.ic[itIdx]);
+                    var good = exMatch(ex, a, val, exIsChoice(ex, itIdx, gap)) && (ex.layout !== 'transform' || st.ic[itIdx]);
                     if (good) ok++;
                     else wrong.push({
                         num: ex.layout === 'sort' ? it.text
@@ -6010,10 +6486,11 @@ video {
                     (isSelf ? '' : '<span class="hub-ex-score" data-ex-score="' + exIdx + '" data-ex-total="' + gapTotal + '">&ndash; / ' + gapTotal + '</span>') +
                     '</summary>' +
                     (ex.instructions ? '<p class="hub-ex-instr">' + escapeHtml(ex.instructions) + '</p>' : '') +
+                    (ex.figure ? '<div class="hub-ex-figure">' + ex.figure + '</div>' : '') +
                     wordBox + body +
                     (isSelf || ex.layout === 'transform' ? '' :
                     '<div class="hub-ex-actions">' +
-                    '<button type="button" class="hub-ex-btn hub-ex-btn-main" data-ex-check="' + exIdx + '">Sprawd&#378;</button>' +
+                    (exAllChoice(ex) ? '' : '<button type="button" class="hub-ex-btn hub-ex-btn-main" data-ex-check="' + exIdx + '">Sprawd&#378;</button>') +
                     '<button type="button" class="hub-ex-btn" data-ex-reset="' + exIdx + '">&#8635; Resetuj</button>' +
                     (ex.layout === 'wordform' ? '<button type="button" class="hub-ex-btn" data-ex-reroll="' + exIdx + '">&#127922; Losuj ponownie</button>' : '') +
                     '</div>') + '</details>';
@@ -6033,7 +6510,8 @@ video {
                 return EXERCISES[+g.getAttribute('data-ex')].items[+g.getAttribute('data-it')].answers[+g.getAttribute('data-gap')];
             }
             function okValue(g, v) {
-                return exMatch(EXERCISES[+g.getAttribute('data-ex')], answerOf(g), v);
+                var ex = EXERCISES[+g.getAttribute('data-ex')];
+                return exMatch(ex, answerOf(g), v, exIsChoice(ex, +g.getAttribute('data-it'), +g.getAttribute('data-gap')));
             }
             function isLocked(g, st) {
                 if (st.checked) return true;
@@ -6587,7 +7065,13 @@ video {
         var wqState = wqLoad();
         // Klucz po tytule i poczatku tekstu, nie po pozycji - nowy tekst dopisany
         // pozniej w miesiacu nie przesunie zapisanych odpowiedzi.
-        function wqId(w) { return (w.title || '') + '|' + String(w.text || '').slice(0, 40); }
+        function wqId(w) { return w.wqKey || ((w.title || '') + '|' + String(w.text || '').slice(0, 40)); }
+        // Rejestr punktowanych zestawow pytan po kluczu DOM: "w<i>" = tekst z zakladki
+        // Teksty, "m<i>" = quiz pod artykulem w Artykuly/Wideo (2026-10-14). Ten sam
+        // mechanizm blokady, prob, resetu i wysylki dla obu zakladek.
+        var WQ_REG = {};
+        // Etykieta odpowiedzi w wiadomosci: litera przy ABCD, slowo przy Prawda/Falsz.
+        function wqOptLabel(w, q, oi) { return w.type === 'tf' ? q.options[oi] : String.fromCharCode(65 + oi); }
         function wqSt(w) {
             var k = wqId(w);
             if (!wqState[k] || typeof wqState[k] !== 'object') wqState[k] = { picks: {}, attempts: 1 };
@@ -6612,16 +7096,16 @@ video {
                 if (p === undefined) return;
                 answered++;
                 if (q.options[p] === q.answer) ok++;
-                else wrong.push({ num: qi + 1, picked: String.fromCharCode(65 + p), key: String.fromCharCode(65 + q.options.indexOf(q.answer)) });
+                else wrong.push({ num: qi + 1, picked: wqOptLabel(w, q, p), key: wqOptLabel(w, q, q.options.indexOf(q.answer)) });
             });
             return { ok: ok, answered: answered, total: wqGraded(w).length, wrong: wrong, attempts: st.attempts };
         }
         function wqShareText(w) {
             var r = wqResult(w);
             var lines = [
-                (HUB.student || 'Uczeń') + ' - ' + (HUB.monthLabel || '') + ', Teksty',
+                (HUB.student || 'Uczeń') + ' - ' + (HUB.monthLabel || '') + ', ' + (w.section || 'Teksty'),
                 '',
-                (w.title || 'Tekst') + ': ' + r.ok + '/' + r.total + ' pkt',
+                (w.article ? w.article + '\n' : '') + (w.title || 'Tekst') + ': ' + r.ok + '/' + r.total + ' pkt',
                 'Próba nr ' + r.attempts
             ];
             if (r.answered < r.total) lines.push('Niedokończone: odpowiedzi na ' + r.answered + ' z ' + r.total + ' pytań');
@@ -6633,8 +7117,7 @@ video {
             return lines.join('\n');
         }
         function wqApply(w, flatIdx) {
-            var box = el('hub-writing-list');
-            if (!box) return;
+            var box = document;
             var st = wqSt(w);
             (w.questions || []).forEach(function (q, qi) {
                 var btns = box.querySelectorAll('[data-wq="' + flatIdx + '"][data-wq-q="' + qi + '"]');
@@ -6668,6 +7151,48 @@ video {
                     encodeURIComponent((HUB.student || '') + ' - ' + (w.title || 'Teksty')) + '&body=' + encoded);
             }
             wqStatus(flatIdx, none ? 'Odpowiedz na przynajmniej jedno pytanie, żeby było co wysłać.' : '', false);
+            if (String(flatIdx).charAt(0) === 'm') mediaShareRefresh();
+        }
+        // Artykuly/Wideo: jeden panel wysylki na dole zakladki (klucz "mall"),
+        // wiadomosc zbiera wszystkie quizy z co najmniej jedna odpowiedzia.
+        function mediaQuizKeys() {
+            return Object.keys(WQ_REG).filter(function (k) { return /^m\d+$/.test(k); })
+                .sort(function (a, b) { return parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10); });
+        }
+        function mediaAnswered() {
+            return mediaQuizKeys().reduce(function (n, k) { return n + wqResult(WQ_REG[k]).answered; }, 0);
+        }
+        function mediaShareText() {
+            var lines = [(HUB.student || 'Uczeń') + ' - ' + (HUB.monthLabel || '') + ', Artykuły/Wideo'];
+            var lastArticle = null;
+            mediaQuizKeys().forEach(function (k) {
+                var w = WQ_REG[k], r = wqResult(w);
+                if (!r.answered) return;
+                if (w.article !== lastArticle) { lines.push('', w.article); lastArticle = w.article; }
+                lines.push(w.title + ': ' + r.ok + '/' + r.total + ' pkt, próba nr ' + r.attempts);
+                if (r.answered < r.total) lines.push('Niedokończone: odpowiedzi na ' + r.answered + ' z ' + r.total + ' pytań');
+                if (r.wrong.length) lines.push('Błędy: ' + r.wrong.map(function (x) {
+                    return x.num + ' (zaznaczone ' + x.picked + ', poprawna ' + x.key + ')';
+                }).join(', '));
+            });
+            return lines.join('\n');
+        }
+        function mediaShareRefresh() {
+            var none = !mediaAnswered();
+            var encoded = encodeURIComponent(mediaShareText());
+            var num = (HUB.teacherWhatsApp || '').replace(/[^0-9]/g, '');
+            var wa = document.querySelector('[data-wq-wa="mall"]');
+            var mail = document.querySelector('[data-wq-mail="mall"]');
+            if (wa) {
+                wa.classList.toggle('is-disabled', none);
+                wa.setAttribute('href', none ? '#' : 'https://wa.me/' + num + '?text=' + encoded);
+            }
+            if (mail) {
+                mail.classList.toggle('is-disabled', none);
+                mail.setAttribute('href', none ? '#' : 'mailto:?subject=' +
+                    encodeURIComponent((HUB.student || '') + ' - Artykuły/Wideo') + '&body=' + encoded);
+            }
+            wqStatus('mall', none ? 'Odpowiedz na przynajmniej jedno pytanie, żeby było co wysłać.' : '', false);
         }
         function wqStatus(flatIdx, msg, warn) {
             var s = document.querySelector('[data-wq-status="' + flatIdx + '"]');
@@ -6708,18 +7233,20 @@ video {
                 navigator.clipboard.writeText(text).then(done).catch(legacy);
             } else legacy();
         }
-        function writingQuestionsHtml(w, flatIdx) {
+        function writingQuestionsHtml(w, flatIdx, noShare) {
             var qs = w.questions || [];
             if (!qs.length) return '';
+            WQ_REG[flatIdx] = w;
             var graded = wqGraded(w).length > 0;
+            var isTf = w.type === 'tf';
             var html = '<div class="hub-wq">' + qs.map(function (q, qi) {
                 var opts = (q.options || []).map(function (opt, oi) {
                     return '<button type="button" class="hub-ex-opt" data-wq="' + flatIdx + '" data-wq-q="' + qi + '" data-wq-opt="' + oi + '">' +
-                        escapeHtml(String.fromCharCode(65 + oi) + '. ' + opt) + '</button>';
+                        escapeHtml(isTf ? opt : String.fromCharCode(65 + oi) + '. ' + opt) + '</button>';
                 }).join('');
                 return '<div class="hub-wq-item" style="margin:14px 0 0">' +
                     '<p style="margin:0 0 6px;font-weight:700">' + (qi + 1) + '. ' + escapeHtml(q.q) + '</p>' +
-                    (opts ? '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">' + opts + '</div>' : '') +
+                    (opts ? '<div style="display:flex;flex-direction:' + (isTf ? 'row;flex-wrap:wrap' : 'column') + ';align-items:flex-start;gap:' + (isTf ? '8px' : '4px') + '">' + opts + '</div>' : '') +
                     '</div>';
             }).join('') + '</div>';
             if (!graded) return html;
@@ -6728,7 +7255,12 @@ video {
                 '<span class="hub-ex-score" style="white-space:normal" data-wq-score="' + flatIdx + '"></span>' +
                 '<button type="button" class="hub-ex-btn" data-wq-reset="' + flatIdx + '">&#8635; Resetuj</button>' +
                 '</div>' +
-                '<div class="hub-share">' +
+                (noShare ? '' : wqSharePanelHtml(flatIdx));
+        }
+        // Panel wysylki. W Artykulach/Wideo jest jeden, na samym dole zakladki
+        // (klucz "mall", wszystkie quizy w jednej wiadomosci), zamiast pod kazdym quizem.
+        function wqSharePanelHtml(flatIdx) {
+            return '<div class="hub-share">' +
                 '<div class="hub-share-actions">' +
                 (typeof navigator.share === 'function'
                     ? '<button type="button" class="hub-cta hub-cta-alt" data-wq-native="' + flatIdx + '">&#128228; Udost&#281;pnij</button>' : '') +
@@ -6739,6 +7271,48 @@ video {
                 '<p class="hub-share-status" data-wq-status="' + flatIdx + '"></p>' +
                 '<textarea class="hub-share-fallback hidden" data-wq-fallback="' + flatIdx + '" readonly></textarea>' +
                 '</div>';
+        }
+
+        // Klikniecia w pytania i przyciski pod nimi (Teksty i Artykuly/Wideo).
+        // Zwraca true, gdy klik nalezal do pytan.
+        function wqHandleClick(e) {
+            var wqBtn = e.target.closest ? e.target.closest('[data-wq]') : null;
+            if (wqBtn) {
+                var wKey = wqBtn.getAttribute('data-wq');
+                var wItem = WQ_REG[wKey];
+                var wqi = parseInt(wqBtn.getAttribute('data-wq-q'), 10);
+                if (!wItem || !wItem.questions[wqi]) return true;
+                var wst = wqSt(wItem);
+                if (wst.picks[wqi] !== undefined) return true;   // pytanie juz zablokowane
+                wst.picks[wqi] = parseInt(wqBtn.getAttribute('data-wq-opt'), 10);
+                wqSave();
+                wqApply(wItem, wKey);
+                return true;
+            }
+            var wqAct = e.target.closest ? e.target.closest('[data-wq-reset],[data-wq-copy],[data-wq-native]') : null;
+            if (!wqAct) return false;
+            wqAct.blur();
+            var aKey = wqAct.getAttribute('data-wq-reset') || wqAct.getAttribute('data-wq-copy') || wqAct.getAttribute('data-wq-native');
+            var aItem = WQ_REG[aKey];
+            if (!aItem && aKey !== 'mall') return true;
+            if (wqAct.hasAttribute('data-wq-reset')) {
+                wqReset(aItem);
+                wqSave();
+                wqApply(aItem, aKey);
+                return true;
+            }
+            var aAnswered = aKey === 'mall' ? mediaAnswered() : wqResult(aItem).answered;
+            var aText = aKey === 'mall' ? mediaShareText() : wqShareText(aItem);
+            if (!aAnswered) { wqStatus(aKey, 'Odpowiedz na przynajmniej jedno pytanie, żeby było co wysłać.', true); return true; }
+            if (wqAct.hasAttribute('data-wq-copy')) { wqCopy(aKey, aText); return true; }
+            try {
+                navigator.share({ text: aText }).catch(function () {
+                    wqStatus(aKey, 'Udostępnianie anulowane - spróbuj WhatsApp albo Kopiuj tekst.', false);
+                });
+            } catch (err) {
+                wqStatus(aKey, 'Udostępnianie niedostępne - użyj WhatsApp albo Kopiuj tekst.', false);
+            }
+            return true;
         }
 
         function renderWriting() {
@@ -6768,12 +7342,12 @@ video {
                         (w.title ? '<p class="hub-pron-word">' + escapeHtml(w.title) + '</p>' : '') +
                         player +
                         '<p class="hub-msg-body">' + escapeAndLinkify(w.text || '') + '</p>' +
-                        writingQuestionsHtml(w, flatIdx) +
+                        writingQuestionsHtml(w, 'w' + flatIdx) +
                         '</div></div>';
                 }).join('');
                 return '<details class="hub-lesson-group"' + (isLast ? ' open' : '') + '>' + head + body + '</details>';
             }).join('');
-            WRITING.forEach(function (w, wi) { if (wqGraded(w).length) wqApply(w, wi); });
+            WRITING.forEach(function (w, wi) { if (wqGraded(w).length) wqApply(w, 'w' + wi); });
             var wResetAll = el('hub-writing-reset-all');
             if (wResetAll && WRITING.some(function (w) { return wqGraded(w).length; })) {
                 wResetAll.classList.remove('hidden');
@@ -6783,49 +7357,14 @@ video {
                     WRITING.forEach(function (w, wi) {
                         if (!wqGraded(w).length) return;
                         wqReset(w);
-                        wqApply(w, wi);
+                        wqApply(w, 'w' + wi);
                     });
                     wqSave();
                 });
             }
 
             box.addEventListener('click', function (e) {
-                var wqBtn = e.target.closest ? e.target.closest('[data-wq]') : null;
-                if (wqBtn) {
-                    var wIdx = parseInt(wqBtn.getAttribute('data-wq'), 10);
-                    var wItem = WRITING[wIdx];
-                    var wqi = parseInt(wqBtn.getAttribute('data-wq-q'), 10);
-                    if (!wItem || !wItem.questions[wqi]) return;
-                    var wst = wqSt(wItem);
-                    if (wst.picks[wqi] !== undefined) return;   // pytanie juz zablokowane
-                    wst.picks[wqi] = parseInt(wqBtn.getAttribute('data-wq-opt'), 10);
-                    wqSave();
-                    wqApply(wItem, wIdx);
-                    return;
-                }
-                var wqAct = e.target.closest ? e.target.closest('[data-wq-reset],[data-wq-copy],[data-wq-native]') : null;
-                if (wqAct) {
-                    wqAct.blur();
-                    var aIdx = parseInt(wqAct.getAttribute('data-wq-reset') || wqAct.getAttribute('data-wq-copy') || wqAct.getAttribute('data-wq-native'), 10);
-                    var aItem = WRITING[aIdx];
-                    if (!aItem) return;
-                    if (wqAct.hasAttribute('data-wq-reset')) {
-                        wqReset(aItem);
-                        wqSave();
-                        wqApply(aItem, aIdx);
-                        return;
-                    }
-                    if (!wqResult(aItem).answered) { wqStatus(aIdx, 'Odpowiedz na przynajmniej jedno pytanie, żeby było co wysłać.', true); return; }
-                    if (wqAct.hasAttribute('data-wq-copy')) { wqCopy(aIdx, wqShareText(aItem)); return; }
-                    try {
-                        navigator.share({ text: wqShareText(aItem) }).catch(function () {
-                            wqStatus(aIdx, 'Udostępnianie anulowane - spróbuj WhatsApp albo Kopiuj tekst.', false);
-                        });
-                    } catch (err) {
-                        wqStatus(aIdx, 'Udostępnianie niedostępne - użyj WhatsApp albo Kopiuj tekst.', false);
-                    }
-                    return;
-                }
+                if (wqHandleClick(e)) return;
                 var playPauseBtn = e.target.closest ? e.target.closest('[data-hub-writing-playpause]') : null;
                 var stopBtn = e.target.closest ? e.target.closest('[data-hub-writing-stop]') : null;
                 var rateBtn = e.target.closest ? e.target.closest('[data-hub-writing-rate]') : null;
@@ -8049,6 +8588,53 @@ video {
         }
 
         // ==========================================
+        // Gry: osadzony HTML otwierany w pelnoekranowej ramce
+        // ==========================================
+        var gameUrl = null;
+        function renderGames() {
+            var box = el('hub-games-list');
+            if (!box) return;
+            if (!GAMES.length) {
+                box.innerHTML = '<p class="hub-tagline">Na razie nie ma tu gier.</p>';
+            } else {
+                box.innerHTML = '<div class="hub-links">' + GAMES.map(function (g, i) {
+                    return '<button type="button" class="hub-link-tile" data-hub-game="' + i + '" style="cursor:pointer; text-align:left; width:100%">' +
+                        '<span>🎮 <strong>' + escapeHtml(g.title) + '</strong>' +
+                        (g.description ? '<br><span class="hub-tile-sub">' + escapeHtml(g.description) + '</span>' : '') +
+                        '</span></button>';
+                }).join('') + '</div>';
+            }
+            // Przycisk nawigacji znika, gdy nie ma gier - pusta zakladka nic nie daje.
+            var navBtn = document.querySelector('.hub-nav-btn[data-hub-nav="games"]');
+            hideIf(!GAMES.length, navBtn);
+            box.addEventListener('click', function (e) {
+                var b = e.target.closest ? e.target.closest('[data-hub-game]') : null;
+                if (b) openGame(parseInt(b.getAttribute('data-hub-game'), 10));
+            });
+            var close = el('hub-game-close');
+            if (close) close.addEventListener('click', closeGame);
+        }
+        function openGame(i) {
+            var g = GAMES[i];
+            if (!g) return;
+            stopSpeaking();
+            var bin = atob(g.html64);
+            var bytes = new Uint8Array(bin.length);
+            for (var k = 0; k < bin.length; k++) bytes[k] = bin.charCodeAt(k);
+            if (gameUrl) URL.revokeObjectURL(gameUrl);
+            gameUrl = URL.createObjectURL(new Blob([bytes], { type: 'text/html;charset=utf-8' }));
+            el('hub-game-frame').src = gameUrl;
+            el('hub-game-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        function closeGame() {
+            el('hub-game-overlay').style.display = 'none';
+            el('hub-game-frame').src = 'about:blank';
+            if (gameUrl) { URL.revokeObjectURL(gameUrl); gameUrl = null; }
+            document.body.style.overflow = '';
+        }
+
+        // ==========================================
         // Start
         // ==========================================
         function hubInit() {
@@ -8066,6 +8652,7 @@ video {
                 renderPronunciation();
                 renderWriting();
                 renderExercises();
+                renderGames();
 
                 loadSentences();
                 renderSentLessonChips();
